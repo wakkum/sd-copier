@@ -24,6 +24,11 @@ Fixes from a full code and security review.
   away after the last video copied but before the notes/log were written,
   the user still saw "Success!". Those writes now report failure and
   downgrade the dialog to a warning.
+- **"Check for Updates" never worked in the built app.** A PyInstaller
+  bundle ships its own OpenSSL with no trust store, so every HTTPS request
+  failed certificate verification and the update check reported "couldn't
+  check for updates" on every machine, regardless of network. The CA
+  bundle (`certifi`) is now bundled at build time and used explicitly.
 - **Stale event number after editing the date.** Using "Add Another Camera
   to This Event" and then changing the date could merge footage into an
   unrelated event folder. The pinned number is now invalidated if the date

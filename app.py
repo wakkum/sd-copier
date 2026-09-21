@@ -19,6 +19,7 @@ import json
 import os
 import re
 import shutil
+import ssl
 import string
 import subprocess
 import sys
@@ -666,6 +667,24 @@ def eject_drive(path: str) -> bool:
 # README.md for why the repo needs to be public rather than private.
 # ---------------------------------------------------------------------------
 
+def ssl_context() -> ssl.SSLContext:
+    """Build an SSL context with a CA bundle we can count on.
+
+    A PyInstaller-frozen app carries its own OpenSSL, which has no trust
+    store of its own: ssl.get_default_verify_paths().cafile is None inside
+    the bundle, so every HTTPS request fails verification and the update
+    check silently reports "couldn't check". certifi ships the CA bundle
+    that fixes this and is pulled in at build time. Falling back to the
+    stock context keeps app.py runnable as a plain script on a machine
+    where certifi isn't installed.
+    """
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except Exception:
+        return ssl.create_default_context()
+
+
 def version_tuple(v: str) -> tuple:
     try:
         return tuple(int(p) for p in v.strip().lstrip("v").split("."))
@@ -681,7 +700,7 @@ def check_for_update(timeout: float = 4.0):
         url, headers={"Accept": "application/vnd.github+json", "User-Agent": "sd-video-backup"}
     )
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        with urllib.request.urlopen(req, timeout=timeout, context=ssl_context()) as resp:
             data = json.loads(resp.read().decode("utf-8"))
     except (urllib.error.URLError, TimeoutError, ValueError, OSError):
         return None

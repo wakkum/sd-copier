@@ -1,1 +1,4 @@
 pyinstaller
+# Ships the CA bundle the frozen app needs for the update check (a
+# PyInstaller bundle has no system trust store of its own).
+certifi
