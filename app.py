@@ -4,17 +4,16 @@ SD Card Video Backup Tool
 Copies video files from an SD card into a dated, structured folder on an
 external hard drive:
 
-    {HDD}/{YYYY_MM_DD}/{NN}_EVENT_{N}_{YYYY_MM_DD}/{Button camera|PB}/
+    {HDD}/{YYYY_MM_DD}/{NN}_EVENT_{name}_{YYYY_MM_DD}/{Button camera|PB}/
 
 Designed to be used by someone with no technical background: pick the SD
 card, pick the hard drive, fill in a short form, click Copy. The interface
-can be switched between English and Greek from the dropdown in the top
-right corner.
+language is chosen from the dropdown in the top right corner; see LANGUAGES
+below for the ones currently available.
 
 Works on Windows and macOS using only the Python standard library.
 """
 
-import filecmp
 import hashlib
 import json
 import os
@@ -33,7 +32,7 @@ from datetime import date
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-APP_VERSION = "1.2.0"
+APP_VERSION = "1.3.0"
 
 # Public GitHub repo used by "Check for Updates" (reads the latest Release
 # via GitHub's public API - no auth token needed or embedded). Left blank,
@@ -108,6 +107,9 @@ STRINGS = {
                                    "SD card read error or bad connection) - try again.",
         "msg_warning_body": "{copied} of {total} files copied and verified successfully.\n\n"
                              "{details}\n\nSee info.txt in:\n{folder}",
+        "msg_warning_metadata": "The videos copied, but the notes/log files could not be "
+                                  "written to the hard drive (was it unplugged?). Your description "
+                                  "may not have been saved.",
         "not_enough_space": "Not enough free space on the hard drive.\n\nNeeded: {needed}\n"
                              "Available: {available}",
         "duplicate_card_msg": "This SD card looks like it was already copied here before:\n\n"
@@ -125,7 +127,6 @@ STRINGS = {
         "eject_button": "Eject SD Card & Hard Drive",
         "eject_confirm": "Eject both the SD card and the hard drive now?\n\nMake sure any copy "
                           "has finished first.",
-        "eject_result": "{results}",
         "eject_ok": "Ejected safely - you can now unplug it.",
         "eject_fail": "Could not eject - you may need to eject it manually.",
         "update_check_button": "Check for Updates",
@@ -170,6 +171,7 @@ STRINGS = {
         "msg_warning_failed": "{n} αρχείο(α) απέτυχαν να αντιγραφούν.",
         "msg_warning_unverified": "{n} αρχείο(α) αντιγράφηκαν αλλά δεν ταίριαζαν με το πρωτότυπο (πιθανό σφάλμα ανάγνωσης της κάρτας SD ή κακή σύνδεση) - δοκιμάστε ξανά.",
         "msg_warning_body": "{copied} από {total} αρχεία αντιγράφηκαν και ελέγχθηκαν με επιτυχία.\n\n{details}\n\nΔείτε το info.txt στο:\n{folder}",
+        "msg_warning_metadata": "Τα βίντεο αντιγράφηκαν, αλλά τα αρχεία σημειώσεων/ιστορικού δεν ήταν δυνατό να γραφτούν στον σκληρό δίσκο (μήπως αποσυνδέθηκε;). Η περιγραφή σας ίσως να μην αποθηκεύτηκε.",
         "not_enough_space": "Δεν υπάρχει αρκετός ελεύθερος χώρος στον σκληρό δίσκο.\n\nΑπαιτούνται: {needed}\nΔιαθέσιμα: {available}",
         "duplicate_card_msg": "Αυτή η κάρτα SD φαίνεται να έχει ήδη αντιγραφεί εδώ:\n\n{folder}\n(στις {when})\n\nΝα αντιγραφεί ξανά;",
         "same_event_button": "Προσθήκη Άλλης Κάμερας σε Αυτό το Συμβάν",
@@ -182,7 +184,6 @@ STRINGS = {
         "history_close": "Κλείσιμο",
         "eject_button": "Αποσύνδεση Κάρτας SD & Σκληρού Δίσκου",
         "eject_confirm": "Αποσύνδεση και της κάρτας SD και του σκληρού δίσκου τώρα;\n\nΒεβαιωθείτε ότι κάθε αντιγραφή έχει ολοκληρωθεί.",
-        "eject_result": "{results}",
         "eject_ok": "Αποσυνδέθηκε με ασφάλεια - μπορείτε τώρα να το αφαιρέσετε.",
         "eject_fail": "Δεν ήταν δυνατή η αποσύνδεση - ίσως χρειαστεί να το αφαιρέσετε χειροκίνητα.",
         "update_check_button": "Έλεγχος για Ενημερώσεις",
@@ -234,6 +235,9 @@ STRINGS = {
                                    "réessayez.",
         "msg_warning_body": "{copied} fichiers sur {total} copiés et vérifiés avec succès.\n\n{details}"
                              "\n\nVoir info.txt dans :\n{folder}",
+        "msg_warning_metadata": "Les vidéos ont été copiées, mais les fichiers de notes/journal "
+                                  "n'ont pas pu être écrits sur le disque dur (a-t-il été débranché ?). "
+                                  "Votre description n'a peut-être pas été enregistrée.",
         "not_enough_space": "Espace libre insuffisant sur le disque dur.\n\nNécessaire : {needed}\n"
                              "Disponible : {available}",
         "duplicate_card_msg": "Cette carte SD semble avoir déjà été copiée ici auparavant :\n\n{folder}"
@@ -253,7 +257,6 @@ STRINGS = {
         "eject_button": "Éjecter la Carte SD et le Disque Dur",
         "eject_confirm": "Éjecter maintenant la carte SD et le disque dur ?\n\nAssurez-vous d'abord que "
                           "toute copie est terminée.",
-        "eject_result": "{results}",
         "eject_ok": "Éjecté en toute sécurité - vous pouvez maintenant le débrancher.",
         "eject_fail": "Impossible d'éjecter - vous devrez peut-être l'éjecter manuellement.",
         "update_check_button": "Vérifier les Mises à Jour",
@@ -306,6 +309,9 @@ STRINGS = {
                                    "Verbindung) - bitte erneut versuchen.",
         "msg_warning_body": "{copied} von {total} Dateien erfolgreich kopiert und überprüft.\n\n"
                              "{details}\n\nSiehe info.txt in:\n{folder}",
+        "msg_warning_metadata": "Die Videos wurden kopiert, aber die Notiz-/Protokolldateien "
+                                  "konnten nicht auf die Festplatte geschrieben werden (wurde sie "
+                                  "abgezogen?). Ihre Beschreibung wurde möglicherweise nicht gespeichert.",
         "not_enough_space": "Nicht genügend freier Speicherplatz auf der Festplatte.\n\nBenötigt: "
                              "{needed}\nVerfügbar: {available}",
         "duplicate_card_msg": "Diese SD-Karte scheint bereits hierher kopiert worden zu sein:\n\n"
@@ -325,7 +331,6 @@ STRINGS = {
         "eject_button": "SD-Karte & Festplatte auswerfen",
         "eject_confirm": "Jetzt sowohl die SD-Karte als auch die Festplatte auswerfen?\n\nStellen Sie "
                           "sicher, dass jede Kopie abgeschlossen ist.",
-        "eject_result": "{results}",
         "eject_ok": "Sicher ausgeworfen - Sie können es jetzt abziehen.",
         "eject_fail": "Auswerfen nicht möglich - Sie müssen es möglicherweise manuell auswerfen.",
         "update_check_button": "Nach Updates suchen",
@@ -378,6 +383,9 @@ STRINGS = {
                                    "riprova.",
         "msg_warning_body": "{copied} di {total} file copiati e verificati con successo.\n\n{details}"
                              "\n\nVedi info.txt in:\n{folder}",
+        "msg_warning_metadata": "I video sono stati copiati, ma i file di note/cronologia non "
+                                  "sono stati scritti sul disco rigido (è stato scollegato?). La tua "
+                                  "descrizione potrebbe non essere stata salvata.",
         "not_enough_space": "Spazio libero insufficiente sul disco rigido.\n\nNecessario: {needed}\n"
                              "Disponibile: {available}",
         "duplicate_card_msg": "Questa scheda SD sembra essere già stata copiata qui in precedenza:\n\n"
@@ -396,7 +404,6 @@ STRINGS = {
         "eject_button": "Espelli Scheda SD e Disco Rigido",
         "eject_confirm": "Espellere ora sia la scheda SD che il disco rigido?\n\nAssicurati prima che "
                           "ogni copia sia terminata.",
-        "eject_result": "{results}",
         "eject_ok": "Espulso in sicurezza - ora puoi scollegarlo.",
         "eject_fail": "Impossibile espellere - potrebbe essere necessario espellerlo manualmente.",
         "update_check_button": "Controlla Aggiornamenti",
@@ -417,7 +424,7 @@ STRINGS = {
 def load_config() -> dict:
     if CONFIG_PATH.exists():
         try:
-            return json.loads(CONFIG_PATH.read_text())
+            return json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             return {}
     return {}
@@ -425,7 +432,7 @@ def load_config() -> dict:
 
 def save_config(cfg: dict) -> None:
     try:
-        CONFIG_PATH.write_text(json.dumps(cfg, indent=2))
+        CONFIG_PATH.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
     except OSError:
         pass
 
@@ -512,8 +519,8 @@ def next_event_number(date_folder: Path) -> int:
 
 def sanitize_event_name(name: str) -> str:
     """Turn free-form user text into a filesystem-safe folder name segment.
-    Keeps letters (including Greek and accented Western European letters -
-    French/German/Italian all use those), numbers, and turns spaces into
+    Keeps letters and numbers from any of the alphabets the app supports
+    (accented and non-Latin scripts included) and turns spaces into
     underscores; strips characters that aren't safe in Windows/Mac folder
     names. Falls back to "Event" if nothing usable is left."""
     name = name.strip()
@@ -538,16 +545,32 @@ def open_in_file_manager(path: Path) -> None:
         pass
 
 
-def files_match(src: Path, dest: Path) -> bool:
-    """Verify a copied file matches its source: same size, then a full
-    byte-for-byte comparison (not just relying on the OS reporting no
-    error during the copy)."""
-    try:
-        if src.stat().st_size != dest.stat().st_size:
-            return False
-        return filecmp.cmp(src, dest, shallow=False)
-    except OSError:
-        return False
+COPY_CHUNK_SIZE = 1024 * 1024
+
+
+def copy_with_hash(src: Path, dest: Path) -> str:
+    """Copy src to dest, returning the SHA-256 of the bytes read from the
+    source. Hashing as the data streams through means the (often slow) SD
+    card is read once rather than twice: verification afterwards only has
+    to read back the freshly written destination file."""
+    digest = hashlib.sha256()
+    with src.open("rb") as fsrc, dest.open("wb") as fdst:
+        while True:
+            chunk = fsrc.read(COPY_CHUNK_SIZE)
+            if not chunk:
+                break
+            digest.update(chunk)
+            fdst.write(chunk)
+    shutil.copystat(src, dest)
+    return digest.hexdigest()
+
+
+def hash_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(COPY_CHUNK_SIZE), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def unique_destination(dest_dir: Path, filename: str) -> Path:
@@ -589,17 +612,20 @@ def load_registry(dest_root: Path) -> dict:
     path = dest_root / REGISTRY_FILENAME
     if path.exists():
         try:
-            return json.loads(path.read_text())
+            return json.loads(path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             return {}
     return {}
 
 
-def save_registry(dest_root: Path, registry: dict) -> None:
+def save_registry(dest_root: Path, registry: dict) -> bool:
     try:
-        (dest_root / REGISTRY_FILENAME).write_text(json.dumps(registry, indent=2))
+        (dest_root / REGISTRY_FILENAME).write_text(
+            json.dumps(registry, indent=2), encoding="utf-8"
+        )
+        return True
     except OSError:
-        pass
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -613,12 +639,19 @@ def eject_drive(path: str) -> bool:
             return r.returncode == 0
         elif sys.platform.startswith("win"):
             drive_root = path[:2] + "\\" if len(path) >= 2 and path[1] == ":" else path
+            # PowerShell parses -Command as source, so the path must never be
+            # interpolated raw: pass it as a bound parameter instead. (Doubling
+            # quotes would also work, but a real parameter can't be escaped out
+            # of at all.)
             script = (
+                "param($p) "
                 "$s = New-Object -ComObject Shell.Application; "
-                f"$s.Namespace(17).ParseName('{drive_root}').InvokeVerb('Eject')"
+                "$s.Namespace(17).ParseName($p).InvokeVerb('Eject')"
             )
-            r = subprocess.run(["powershell", "-NoProfile", "-Command", script],
-                                capture_output=True, timeout=20)
+            r = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", script, "-p", drive_root],
+                capture_output=True, timeout=20,
+            )
             return r.returncode == 0
         else:
             r = subprocess.run(["umount", path], capture_output=True, timeout=20)
@@ -931,10 +964,18 @@ class App(tk.Tk):
             messagebox.showerror(self.t("app_title"), self.t("err_date"))
             return
 
-        event_num_override = self._pending_event_num
+        # The pinned event number only belongs to the event it was pinned
+        # from. If the user edited the date (or switched drives) afterwards,
+        # reusing it would merge this footage into an unrelated event folder
+        # on the new date, so fall back to normal auto-numbering.
+        event_num_override = None
+        if self._pending_event_num is not None:
+            pinned = self._pending_event_num
+            if pinned["date_str"] == date_str and pinned["dest_root"] == dest_root:
+                event_num_override = pinned["event_num"]
         self._pending_event_num = None
 
-        self.copy_button.config(state="disabled")
+        self._set_busy(True)
         self.status_label.config(text=self.t("status_scanning"))
 
         thread = threading.Thread(
@@ -1014,40 +1055,50 @@ class App(tk.Tk):
             self._set_status(self.t("status_copying", i=i, total=total, name=src_file.name))
             try:
                 dest_file = unique_destination(camera_folder, src_file.name)
-                shutil.copy2(src_file, dest_file)
+                source_digest = copy_with_hash(src_file, dest_file)
             except OSError as e:
                 failed.append((src_file.name, str(e)))
                 self._set_progress(i)
                 continue
 
             self._set_status(self.t("status_verifying", i=i, total=total, name=src_file.name))
-            if files_match(src_file, dest_file):
+            try:
+                verified = hash_file(dest_file) == source_digest
+            except OSError:
+                verified = False
+            if verified:
                 copied += 1
             else:
                 unverified.append(src_file.name)
             self._set_progress(i)
 
-        self._write_info_file(event_folder, camera_folder, date_str, camera, event_name, description,
-                               important, copied, failed, unverified)
-        self._append_master_log(dest_root, event_folder, date_str, camera, event_name, description,
-                                 important, copied, total)
+        # Track these separately: the videos themselves can copy perfectly
+        # while the drive disappears before the notes/log land, and the user
+        # must not be told "success" when their description was lost.
+        metadata_ok = self._write_info_file(
+            event_folder, camera_folder, date_str, camera, event_name, description,
+            important, copied, failed, unverified)
+        metadata_ok &= self._append_master_log(
+            dest_root, event_folder, date_str, camera, event_name, description,
+            important, copied, total)
 
         if important:
             try:
                 (event_folder / "IMPORTANT").write_text(
                     "This event was marked as VERY IMPORTANT.\n"
                     f"Event: {event_name}\n"
-                    f"Description: {description}\n"
+                    f"Description: {description}\n",
+                    encoding="utf-8",
                 )
             except OSError:
-                pass
+                metadata_ok = False
 
         if copied > 0:
             registry[fingerprint] = {
                 "folder": str(event_folder.relative_to(dest_root)),
                 "when": time.strftime("%Y-%m-%d %H:%M:%S"),
             }
-            save_registry(dest_root, registry)
+            metadata_ok &= save_registry(dest_root, registry)
 
         self.config_data["last_destination"] = str(dest_root)
         save_config(self.config_data)
@@ -1057,12 +1108,12 @@ class App(tk.Tk):
             "description": description, "important": important, "event_num": event_num,
         } if copied > 0 else None
 
-        self._on_done(copied, total, failed, unverified, event_folder, event_info)
+        self._on_done(copied, total, failed, unverified, event_folder, event_info, metadata_ok)
 
     @staticmethod
     def _write_info_file(event_folder: Path, camera_folder: Path, date_str: str, camera: str,
                           event_name: str, description: str, important: bool, copied: int,
-                          failed: list, unverified: list):
+                          failed: list, unverified: list) -> bool:
         info_path = event_folder / "info.txt"
         lines = [
             f"Date: {date_str}",
@@ -1081,15 +1132,19 @@ class App(tk.Tk):
             lines += ["", "Files copied but that FAILED verification (source and copy don't match - retry these):"]
             lines += [f"  - {name}" for name in unverified]
         try:
-            existing = info_path.read_text() if info_path.exists() else ""
-            info_path.write_text(existing + ("\n\n---\n\n" if existing else "") + "\n".join(lines))
+            existing = info_path.read_text(encoding="utf-8") if info_path.exists() else ""
+            info_path.write_text(
+                existing + ("\n\n---\n\n" if existing else "") + "\n".join(lines),
+                encoding="utf-8",
+            )
+            return True
         except OSError:
-            pass
+            return False
 
     @staticmethod
     def _append_master_log(dest_root: Path, event_folder: Path, date_str: str, camera: str,
                             event_name: str, description: str, important: bool, copied: int,
-                            total: int):
+                            total: int) -> bool:
         """Append this event's description to a single running log at the root
         of the hard drive, so there's one file with every recording's
         description in it, in the order they were added."""
@@ -1109,8 +1164,9 @@ class App(tk.Tk):
         try:
             with log_path.open("a", encoding="utf-8") as f:
                 f.write(entry + "\n")
+            return True
         except OSError:
-            pass
+            return False
 
     # -- Thread-safe UI updates ----------------------------------------------
 
@@ -1123,22 +1179,35 @@ class App(tk.Tk):
     def _set_status(self, text):
         self.after(0, lambda: self.status_label.config(text=text))
 
+    def _set_busy(self, busy: bool):
+        """Lock the controls that must not be touched mid-copy. Ejecting a
+        drive while files are being written to it corrupts the copy, so the
+        eject button is disabled for the duration rather than just warned
+        about in its confirmation dialog."""
+        state = "disabled" if busy else "normal"
+        self.copy_button.config(state=state)
+        self.eject_button.config(state=state)
+        if busy:
+            self.same_event_button.config(state="disabled")
+        elif self.last_event_info:
+            self.same_event_button.config(state="normal")
+
     def _on_error(self, message):
         def show():
-            self.copy_button.config(state="normal")
+            self._set_busy(False)
             self.status_label.config(text="")
             messagebox.showerror(self.t("app_title"), message)
         self.after(0, show)
 
     def _on_cancelled(self):
         def show():
-            self.copy_button.config(state="normal")
+            self._set_busy(False)
             self.status_label.config(text="")
         self.after(0, show)
 
-    def _on_done(self, copied, total, failed, unverified, event_folder, event_info):
+    def _on_done(self, copied, total, failed, unverified, event_folder, event_info, metadata_ok=True):
         def show():
-            self.copy_button.config(state="normal")
+            self._set_busy(False)
             problems = len(failed) + len(unverified)
 
             if event_info:
@@ -1146,15 +1215,18 @@ class App(tk.Tk):
                 self.same_event_button.config(state="normal")
                 self.same_event_hint_label.config(text=self.t("same_event_hint"))
 
-            if problems:
-                self.status_label.config(
-                    text=self.t("status_done_problems", copied=copied, total=total, problems=problems)
-                )
+            if problems or not metadata_ok:
                 detail_lines = []
                 if failed:
                     detail_lines.append(self.t("msg_warning_failed", n=len(failed)))
                 if unverified:
                     detail_lines.append(self.t("msg_warning_unverified", n=len(unverified)))
+                if not metadata_ok:
+                    detail_lines.append(self.t("msg_warning_metadata"))
+                self.status_label.config(
+                    text=self.t("status_done_problems", copied=copied, total=total,
+                                problems=problems + (0 if metadata_ok else 1))
+                )
                 messagebox.showwarning(
                     self.t("app_title"),
                     self.t("msg_warning_body", copied=copied, total=total,
@@ -1184,7 +1256,11 @@ class App(tk.Tk):
         self.description_text.delete("1.0", "end")
         self.description_text.insert("1.0", info["description"])
         self.important_var.set(info["important"])
-        self._pending_event_num = info["event_num"]
+        self._pending_event_num = {
+            "event_num": info["event_num"],
+            "date_str": info["date_str"],
+            "dest_root": info["dest_root"],
+        }
 
         cameras = list(CAMERA_FOLDER_NAMES.keys())
         other = next((c for c in cameras if c != self.camera_var.get()), self.camera_var.get())

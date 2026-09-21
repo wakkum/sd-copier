@@ -44,10 +44,10 @@ Finder/Explorer so the user can see the result right away.
 The leading number (`NN`) auto-increments if you run the tool again for the
 same date (e.g. a second recording later the same day becomes `02_EVENT_...`),
 regardless of what the event is named. The event name is typed freely by the
-user (letters, numbers, and Greek characters are all fine); it's cleaned up
-automatically for use in a folder name (spaces become underscores, symbols
-like `/` or `:` are stripped). Leaving it blank just calls the folder
-"Event".
+user (letters and numbers from any of the supported alphabets are all
+fine, accents included); it's cleaned up automatically for use in a folder
+name (spaces become underscores, symbols like `/` or `:` are stripped).
+Leaving it blank just calls the folder "Event".
 
 ## One-time setup (do this once per computer, as the technical person)
 
