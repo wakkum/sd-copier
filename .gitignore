@@ -1,0 +1,21 @@
+# Not meant to be public (see project notes)
+HOW_TO_USE.pdf
+
+# Build artifacts (regenerate with build_mac.sh / build_windows.bat)
+dist/
+build/
+*.spec
+.venv_build/
+
+# Python
+__pycache__/
+*.pyc
+
+# Local/dev cruft
+.DS_Store
+*.log
+
+# Never commit user machine state (this lives in the user's home dir, not
+# here, but excluded defensively in case it's ever copied in)
+.sd_video_backup_config.json
+.sd_backup_registry.json
