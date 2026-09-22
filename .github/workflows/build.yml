@@ -64,7 +64,9 @@ jobs:
         shell: pwsh
         run: |
           $tag = "${{ inputs.tag || github.ref_name }}" -replace '^v',''
-          Compress-Archive -Path "dist/SD Video Backup/*" `
+          # Zip the folder itself, not its contents, so unpacking gives a
+          # tidy "SD Video Backup" folder instead of loose files in Downloads.
+          Compress-Archive -Path "dist/SD Video Backup" `
             -DestinationPath "SD-Video-Backup-$tag-windows.zip"
           Get-ChildItem "SD-Video-Backup-$tag-windows.zip"
 
