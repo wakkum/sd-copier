@@ -9,5 +9,7 @@ pip install --upgrade pip pyinstaller certifi
 pyinstaller --windowed --noconfirm --name "SD Video Backup" app.py
 call .venv_build\Scripts\deactivate.bat
 echo.
-echo Done. Find the app at: dist\SD Video Backup.exe
-pause
+echo Done. Find the app at: dist\SD Video Backup\SD Video Backup.exe
+REM Keep the window open so a human can read the output, but not on CI,
+REM where nobody is there to press a key and the job would hang.
+if not defined CI pause

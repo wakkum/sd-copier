@@ -1,0 +1,104 @@
+name: Build apps
+
+# Builds the Mac and Windows apps on GitHub's own runners and attaches them
+# to a release. PyInstaller can't cross-compile, so this is the only way to
+# produce the Windows .exe without sitting at a Windows machine.
+#
+# Runs automatically when a version tag is pushed, or manually from the
+# Actions tab against a tag that already exists.
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and attach to (e.g. 1.3.0)"
+        required: true
+        type: string
+      platforms:
+        description: "Which builds to produce"
+        required: true
+        default: both
+        type: choice
+        options: [both, windows, mac]
+
+# Needed to upload the built apps onto the release.
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    if: >-
+      github.event_name == 'push' ||
+      inputs.platforms == 'both' || inputs.platforms == 'windows'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build the app
+        shell: cmd
+        # build_windows.bat skips its closing `pause` when CI is set, which
+        # GitHub Actions always defines - otherwise the runner would sit at
+        # "Press any key to continue" until the job timed out.
+        run: build_windows.bat
+
+      # PyInstaller's default is a onedir build, so the .exe sits next to an
+      # _internal folder it can't run without. Ship the whole folder zipped.
+      - name: Package
+        shell: pwsh
+        run: |
+          $tag = "${{ inputs.tag || github.ref_name }}" -replace '^v',''
+          Compress-Archive -Path "dist/SD Video Backup/*" `
+            -DestinationPath "SD-Video-Backup-$tag-windows.zip"
+          Get-ChildItem "SD-Video-Backup-$tag-windows.zip"
+
+      - name: Attach to the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ inputs.tag || github.ref_name }}"
+          gh release upload $tag "SD-Video-Backup-$($tag -replace '^v','')-windows.zip" --clobber
+
+  mac:
+    if: >-
+      github.event_name == 'push' ||
+      inputs.platforms == 'both' || inputs.platforms == 'mac'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build the app
+        run: ./build_mac.sh
+
+      - name: Package
+        run: |
+          TAG="${{ inputs.tag || github.ref_name }}"
+          VERSION="${TAG#v}"
+          cd dist
+          zip -qry "../SD-Video-Backup-$VERSION-mac.zip" "SD Video Backup.app"
+          cd ..
+          ls -lh "SD-Video-Backup-$VERSION-mac.zip"
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ inputs.tag || github.ref_name }}"
+          VERSION="${TAG#v}"
+          gh release upload "$TAG" "SD-Video-Backup-$VERSION-mac.zip" --clobber

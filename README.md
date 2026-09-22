@@ -70,13 +70,27 @@ bypass the "unidentified developer" warning (unsigned app).
 Double-click `build_windows.bat` (or run it from a Command Prompt) on a
 Windows machine with Python installed.
 
-Produces `dist\SD Video Backup.exe`. Copy that file anywhere on the user's
-PC (e.g. Desktop). Windows SmartScreen may warn on first run since it's
-unsigned — click "More info" > "Run anyway".
+Produces `dist\SD Video Backup\`, a folder containing
+`SD Video Backup.exe` alongside an `_internal` folder it needs to run.
+Copy the **whole folder** to the user's PC (e.g. Desktop) — the .exe on its
+own won't start. Right-click the .exe > "Send to" > "Desktop (create
+shortcut)" gives them something simple to double-click. Windows SmartScreen
+may warn on first run since it's unsigned — click "More info" > "Run
+anyway".
 
 > Note: you must build the Windows version on a Windows machine and the Mac
 > version on a Mac — PyInstaller doesn't cross-compile. Only rebuild when
 > `app.py` changes; the built app/exe runs indefinitely on its own after that.
+
+### Or let GitHub build them for you
+
+You don't have to build either one by hand.
+[`.github/workflows/build.yml`](.github/workflows/build.yml) builds both on
+GitHub's runners and attaches the zips to a release: push a version tag and
+it runs automatically, or trigger it from the Actions tab against a tag that
+already exists. This is the practical way to get the Windows build without
+owning a Windows machine. The apps it produces are still unsigned, so the
+first-run warnings above apply either way.
 
 ## Other features
 
