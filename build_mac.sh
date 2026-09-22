@@ -6,7 +6,8 @@ set -e
 cd "$(dirname "$0")"
 python3 -m venv .venv_build
 source .venv_build/bin/activate
-pip install --upgrade pip pyinstaller certifi
+python -m pip install --upgrade pip
+python -m pip install --upgrade pyinstaller certifi
 pyinstaller --windowed --noconfirm --name "SD Video Backup" app.py
 deactivate
 echo ""
