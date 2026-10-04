@@ -1,5 +1,7 @@
-# Not meant to be public (see project notes)
+# Not meant to be public (see project notes). howto/ holds the generator and
+# the mockups for that PDF, so it carries the same content and stays out too.
 HOW_TO_USE.pdf
+howto/
 
 # Build artifacts (regenerate with build_mac.sh / build_windows.bat)
 dist/

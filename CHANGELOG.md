@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.4.0
+
+Interface fixes, both reported from real use on Windows.
+
+### Fixed
+- **The green "Copy videos now" button was missing on Windows.** Every
+  control was packed top to bottom into a fixed-height window. Windows
+  draws the system font larger than macOS does, so the form outgrew the
+  window, and Tk's packer silently drops whatever no longer fits rather
+  than scrolling or clipping - taking the Copy button, the progress bar
+  and the status line with it. The action area is now pinned to the
+  bottom of the window and claims its space before the form, the form
+  scrolls when it does not fit, and the window opens sized to its own
+  content (capped to the screen height).
+
+### Changed
+- **Detected drives now show their size.** A row of buttons reading
+  `E:` and `F:` gave no clue which was the SD card and which was
+  the backup drive. Each drive is now a full-width button showing the
+  letter, the volume name and the total capacity, e.g.
+  "E:  SDCARD  (59.5 GB)" next to "F:  BACKUP HDD  (3.6 TB)" - the size
+  being the fastest way to tell the two apart. On Mac the volume name is
+  shown with the size in the same way.
+
 ## 1.3.0
 
 Fixes from a full code and security review.

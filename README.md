@@ -7,7 +7,10 @@ no technical background to use unsupervised.
 ## What it does
 
 1. User inserts the SD card and connects the external HDD.
-2. Opens the app, picks the SD card and the HDD (both auto-suggested).
+2. Opens the app, picks the SD card and the HDD. Both are auto-detected
+   and listed with their volume name and total size (and, on Windows,
+   the drive letter), so the small card is easy to tell from the big
+   backup drive.
 3. Fills in: date, camera (`Button` or `Powerbank`), an event name (e.g.
    "Birthday party" - free text, optional), a description, and whether to
    mark the day as very important.
@@ -123,6 +126,9 @@ folder's README for why Windows can't be made fully silent).
 ## Notes
 
 - The app remembers the last hard drive you used and suggests it next time.
+- The window opens sized to its contents and the form scrolls, so the
+  green Copy button stays reachable on short screens and at the larger
+  system font Windows uses.
 - Video formats recognized: mp4, mov, m4v, avi, mts, m2ts, wmv, flv, mkv,
   3gp, 3gpp.
 - If a file with the same name already exists in the destination, the copy

@@ -33,7 +33,7 @@ from datetime import date
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-APP_VERSION = "1.3.0"
+APP_VERSION = "1.4.0"
 
 # Public GitHub repo used by "Check for Updates" (reads the latest Release
 # via GitHub's public API - no auth token needed or embedded). Left blank,
@@ -487,6 +487,47 @@ def list_candidate_drives() -> list[str]:
     return drives
 
 
+def windows_volume_name(root: str) -> str:
+    """The user-visible label of a Windows volume, e.g. "SDCARD" for E:\\.
+
+    Empty string when the drive has no label or the call fails - callers fall
+    back to showing just the letter.
+    """
+    import ctypes
+
+    name = ctypes.create_unicode_buffer(261)
+    fs = ctypes.create_unicode_buffer(261)
+    try:
+        ok = ctypes.windll.kernel32.GetVolumeInformationW(
+            ctypes.c_wchar_p(root), name, 261, None, None, None, fs, 261
+        )
+    except Exception:
+        return ""
+    return name.value.strip() if ok else ""
+
+
+def drive_label(path: str) -> str:
+    """Button text for a detected drive.
+
+    A bare "E:\\" tells the user nothing about which stick it is, so the
+    label carries the volume name and the total capacity too: the SD card and
+    the backup drive are usually an order of magnitude apart in size, which
+    makes the size the quickest way to tell them apart.
+    """
+    if sys.platform.startswith("win"):
+        letter = path[:2] if len(path) >= 2 and path[1] == ":" else path
+        volume = windows_volume_name(path)
+        base = f"{letter}  {volume}" if volume else letter
+    else:
+        base = Path(path).name or path
+
+    try:
+        total = shutil.disk_usage(path).total
+    except OSError:
+        return base
+    return f"{base}  ({format_bytes(total)})"
+
+
 def find_video_files(root: Path) -> list[Path]:
     files = []
     for dirpath, _dirnames, filenames in os.walk(root):
@@ -719,7 +760,9 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.geometry("640x760")
-        self.minsize(560, 700)
+        # Deliberately short: the form scrolls, so a small laptop screen is
+        # allowed to shrink the window rather than clip the Copy button.
+        self.minsize(560, 480)
 
         self.config_data = load_config()
         self.lang = self.config_data.get("language", "en")
@@ -742,6 +785,7 @@ class App(tk.Tk):
         self._build_ui()
         self._apply_language()
         self._refresh_drive_suggestions()
+        self._size_to_content()
 
     # -- Translation helper ---------------------------------------------------
 
@@ -755,7 +799,7 @@ class App(tk.Tk):
         pad = {"padx": 12, "pady": 6}
 
         top_row = tk.Frame(self)
-        top_row.pack(fill="x", **pad)
+        top_row.pack(side="top", fill="x", **pad)
         self.header = tk.Label(top_row, font=("Helvetica", 16, "bold"))
         self.header.pack(side="left")
 
@@ -770,21 +814,32 @@ class App(tk.Tk):
         self.lang_combo.pack(side="left")
         self.lang_combo.bind("<<ComboboxSelected>>", self._on_language_change)
 
+        # Packed before the form and anchored to the bottom edge, so it claims
+        # its space first. Windows draws the system font larger than macOS
+        # does, which pushed the form past the bottom of the window - and pack
+        # simply drops whatever no longer fits, so the green Copy button was
+        # silently not rendered at all.
+        self._build_action_area(pad)
+
+        # The form itself scrolls, so a window shorter than the form stays
+        # usable instead of hiding the widgets that did not fit.
+        form = self._build_scrollable_form()
+
         # Source
-        self.src_frame = tk.LabelFrame(self)
+        self.src_frame = tk.LabelFrame(form)
         self.src_frame.pack(fill="x", **pad)
         self.source_browse_btn = self._build_path_row(self.src_frame, self.source_path, self._browse_source)
         self.source_suggestions = tk.Frame(self.src_frame)
         self.source_suggestions.pack(fill="x", padx=8, pady=(0, 8))
 
         # Destination
-        self.dst_frame = tk.LabelFrame(self)
+        self.dst_frame = tk.LabelFrame(form)
         self.dst_frame.pack(fill="x", **pad)
         self.dest_browse_btn = self._build_path_row(self.dst_frame, self.dest_path, self._browse_dest)
         self.dest_suggestions = tk.Frame(self.dst_frame)
         self.dest_suggestions.pack(fill="x", padx=8, pady=(0, 8))
 
-        utility_row = tk.Frame(self)
+        utility_row = tk.Frame(form)
         utility_row.pack(fill="x", padx=12)
         self.refresh_btn = tk.Button(utility_row, command=self._refresh_drive_suggestions)
         self.refresh_btn.pack(side="left")
@@ -792,7 +847,7 @@ class App(tk.Tk):
         self.history_button.pack(side="left", padx=(8, 0))
 
         # Details
-        self.details_frame = tk.LabelFrame(self)
+        self.details_frame = tk.LabelFrame(form)
         self.details_frame.pack(fill="x", **pad)
 
         row1 = tk.Frame(self.details_frame)
@@ -839,9 +894,37 @@ class App(tk.Tk):
         )
         self.important_check.pack(side="left")
 
-        # Same-event repeat (enabled after the first successful copy)
+    def _build_action_area(self, pad):
+        """The controls pinned to the bottom of the window.
+
+        Packed bottom-up, so the visual order top to bottom ends up:
+        same-event button, Copy, progress bar, status line, eject/update row.
+        """
+        bottom_row = tk.Frame(self)
+        bottom_row.pack(side="bottom", fill="x", padx=12, pady=(0, 10))
+        self.eject_button = tk.Button(bottom_row, command=self._eject_drives)
+        self.eject_button.pack(side="left")
+        self.update_button = tk.Button(bottom_row, command=self._check_for_updates)
+        self.update_button.pack(side="right")
+
+        self.status_label = tk.Label(self, text="", anchor="w", justify="left", wraplength=600)
+        self.status_label.pack(side="bottom", fill="x", padx=12, pady=8)
+
+        self.progress = ttk.Progressbar(self, mode="determinate")
+        self.progress.pack(side="bottom", fill="x", padx=12, pady=(4, 0))
+
+        action_frame = tk.Frame(self)
+        action_frame.pack(side="bottom", fill="x", **pad)
+        self.copy_button = tk.Button(
+            action_frame, font=("Helvetica", 12, "bold"),
+            bg="#2e7d32", fg="white",
+            activebackground="#1b5e20", activeforeground="white",
+            command=self._start_copy,
+        )
+        self.copy_button.pack(fill="x", ipady=8)
+
         same_event_frame = tk.Frame(self)
-        same_event_frame.pack(fill="x", padx=12, pady=(0, 4))
+        same_event_frame.pack(side="bottom", fill="x", padx=12, pady=(0, 4))
         self.same_event_button = tk.Button(
             same_event_frame, state="disabled", command=self._use_same_event,
         )
@@ -851,27 +934,62 @@ class App(tk.Tk):
         )
         self.same_event_hint_label.pack(fill="x", pady=(2, 0))
 
-        # Action
-        action_frame = tk.Frame(self)
-        action_frame.pack(fill="x", **pad)
-        self.copy_button = tk.Button(
-            action_frame, font=("Helvetica", 12, "bold"),
-            bg="#2e7d32", fg="white", command=self._start_copy,
-        )
-        self.copy_button.pack(fill="x", ipady=8)
+    def _build_scrollable_form(self):
+        """Create the scrolling container and return the frame to build into."""
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand=True)
 
-        self.progress = ttk.Progressbar(self, mode="determinate")
-        self.progress.pack(fill="x", padx=12, pady=(4, 0))
+        canvas = tk.Canvas(container, highlightthickness=0, borderwidth=0)
+        scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
 
-        self.status_label = tk.Label(self, text="", anchor="w", justify="left", wraplength=600)
-        self.status_label.pack(fill="x", padx=12, pady=8)
+        inner = tk.Frame(canvas)
+        window = canvas.create_window((0, 0), window=inner, anchor="nw")
 
-        bottom_row = tk.Frame(self)
-        bottom_row.pack(fill="x", padx=12, pady=(0, 10))
-        self.eject_button = tk.Button(bottom_row, command=self._eject_drives)
-        self.eject_button.pack(side="left")
-        self.update_button = tk.Button(bottom_row, command=self._check_for_updates)
-        self.update_button.pack(side="right")
+        def on_inner_configure(_event=None):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+
+        def on_canvas_configure(event):
+            # Keep the form as wide as the canvas, otherwise it sits in a
+            # narrow column when the window is widened.
+            canvas.itemconfigure(window, width=event.width)
+
+        inner.bind("<Configure>", on_inner_configure)
+        canvas.bind("<Configure>", on_canvas_configure)
+
+        def on_mousewheel(event):
+            # Let the description box keep its own scrolling.
+            under_pointer = self.winfo_containing(event.x_root, event.y_root)
+            if isinstance(under_pointer, tk.Text):
+                return
+            if event.num == 5 or getattr(event, "delta", 0) < 0:
+                canvas.yview_scroll(1, "units")
+            elif event.num == 4 or getattr(event, "delta", 0) > 0:
+                canvas.yview_scroll(-1, "units")
+
+        # Windows and macOS send <MouseWheel>; X11 sends Button-4/Button-5.
+        for sequence in ("<MouseWheel>", "<Button-4>", "<Button-5>"):
+            canvas.bind_all(sequence, on_mousewheel)
+
+        self._form_canvas = canvas
+        self._form_inner = inner
+        return inner
+
+    def _size_to_content(self):
+        """Open large enough for the whole form, but never taller than the screen.
+
+        The canvas has no natural height of its own, so it is told the form's
+        required height before measuring the window. Whatever is left over on
+        a short screen becomes scrollable rather than clipped.
+        """
+        self.update_idletasks()
+        self._form_canvas.configure(height=self._form_inner.winfo_reqheight())
+        self.update_idletasks()
+        width = max(640, self.winfo_reqwidth())
+        height = min(self.winfo_reqheight(), self.winfo_screenheight() - 120)
+        self.geometry(f"{width}x{height}")
 
     def _build_path_row(self, parent, var, browse_cmd):
         row = tk.Frame(parent)
@@ -934,15 +1052,17 @@ class App(tk.Tk):
             tk.Label(self.dest_suggestions, text=self.t("no_drives"), fg="gray").pack(anchor="w")
             return
 
-        tk.Label(self.source_suggestions, text=self.t("detected_label"), fg="gray").pack(side="left")
-        for d in drives:
-            tk.Button(self.source_suggestions, text=Path(d).name or d,
-                      command=lambda d=d: self.source_path.set(d)).pack(side="left", padx=3)
+        # One full-width button per drive rather than a row of small ones:
+        # the labels now carry a volume name and a size, which overflowed the
+        # window when packed side by side.
+        labels = [(d, drive_label(d)) for d in drives]
 
-        tk.Label(self.dest_suggestions, text=self.t("detected_label"), fg="gray").pack(side="left")
-        for d in drives:
-            tk.Button(self.dest_suggestions, text=Path(d).name or d,
-                      command=lambda d=d: self.dest_path.set(d)).pack(side="left", padx=3)
+        for frame, var in ((self.source_suggestions, self.source_path),
+                           (self.dest_suggestions, self.dest_path)):
+            tk.Label(frame, text=self.t("detected_label"), fg="gray").pack(anchor="w")
+            for d, label in labels:
+                tk.Button(frame, text=label, anchor="w",
+                          command=lambda d=d, v=var: v.set(d)).pack(fill="x", pady=1)
 
     def _browse_source(self):
         path = filedialog.askdirectory(title=self.t("dlg_browse_sd_title"))
