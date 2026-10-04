@@ -35,7 +35,7 @@ from datetime import date
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-APP_VERSION = "1.5.0"
+APP_VERSION = "1.5.1"
 
 # Public GitHub repo used by "Check for Updates" (reads the latest Release
 # via GitHub's public API - no auth token needed or embedded). Left blank,

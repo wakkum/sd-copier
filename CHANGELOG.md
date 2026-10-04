@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.1
+
+No functional changes. Published so an installed 1.5.0 has something newer
+to find, which is the only way to exercise the Windows self-update end to
+end: the swap code has to already be in the running copy, so it cannot be
+tested by updating *to* the version that introduces it.
+
 ## 1.5.0
 
 ### Added
