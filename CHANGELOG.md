@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.5.2
+
+### Fixed
+- **The pinned bottom strip took too much of a small screen.** Pinning the
+  action area to the bottom kept the Copy button reachable, but it reserved
+  its height permanently: 216px on a Mac and more at the larger font
+  Windows uses, which on a 768px-high screen was a third of the window
+  before anything had happened. Nothing in that strip is usable before the
+  first copy, so none of it is shown until it is - the same-event button
+  does nothing until an event exists, and an empty progress bar and status
+  line say nothing at all. They appear when a copy or update starts, and
+  the same-event row when a copy finishes. The idle strip is now 86px, and
+  the window opens 138px shorter, which on a 760px window is the
+  difference between the form scrolling and fitting entirely.
+
 ## 1.5.1
 
 No functional changes. Published so an installed 1.5.0 has something newer

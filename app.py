@@ -35,7 +35,7 @@ from datetime import date
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-APP_VERSION = "1.5.1"
+APP_VERSION = "1.5.2"
 
 # Public GitHub repo used by "Check for Updates" (reads the latest Release
 # via GitHub's public API - no auth token needed or embedded). Left blank,
@@ -1134,7 +1134,7 @@ class App(tk.Tk):
         )
         self.copy_button.pack(fill="x", ipady=8)
 
-        same_event_frame = tk.Frame(self)
+        self.same_event_frame = same_event_frame = tk.Frame(self)
         same_event_frame.pack(side="bottom", fill="x", padx=12, pady=(0, 4))
         self.same_event_button = tk.Button(
             same_event_frame, state="disabled", command=self._use_same_event,
@@ -1145,9 +1145,44 @@ class App(tk.Tk):
         )
         self.same_event_hint_label.pack(fill="x", pady=(2, 0))
 
+        self.action_frame = action_frame
+        # The pinned strip costs the form its height, and on a small screen
+        # that was swallowing close to half the window. Nothing here is
+        # usable before the first copy, so none of it is shown until it is:
+        # the same-event button does nothing until an event exists, and an
+        # empty progress bar and status line say nothing at all.
+        self.same_event_frame.pack_forget()
+        self._hide_progress_area()
+
+    def _show_progress_area(self):
+        """Reveal the progress bar and status line, in their original order.
+
+        `before` is what keeps them in place: re-packing a bottom-side widget
+        without it would drop the row at the top of the pinned stack instead
+        of back where it belongs.
+        """
+        if not self.progress.winfo_manager():
+            self.progress.pack(side="bottom", fill="x", padx=12, pady=(4, 0),
+                               before=self.action_frame)
+        if not self.status_label.winfo_manager():
+            self.status_label.pack(side="bottom", fill="x", padx=12, pady=8,
+                                   before=self.progress)
+
+    def _hide_progress_area(self):
+        self.progress.pack_forget()
+        self.status_label.pack_forget()
+
+    def _show_same_event(self):
+        """Show the same-event row once there is an event to add a camera to."""
+        if not self.same_event_frame.winfo_manager():
+            # Must land before the form container in the pack order, or it
+            # takes its slab from above the form instead of just above Copy.
+            self.same_event_frame.pack(side="bottom", fill="x", padx=12, pady=(0, 4),
+                                       before=self._form_container)
+
     def _build_scrollable_form(self):
         """Create the scrolling container and return the frame to build into."""
-        container = tk.Frame(self)
+        self._form_container = container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
 
         canvas = tk.Canvas(container, highlightthickness=0, borderwidth=0)
@@ -1326,6 +1361,7 @@ class App(tk.Tk):
         self._pending_event_num = None
 
         self._set_busy(True)
+        self._show_progress_area()
         self.status_label.config(text=self.t("status_scanning"))
 
         thread = threading.Thread(
@@ -1563,6 +1599,7 @@ class App(tk.Tk):
             if event_info:
                 self.last_event_info = event_info
                 self.same_event_button.config(state="normal")
+                self._show_same_event()
                 self.same_event_hint_label.config(text=self.t("same_event_hint"))
 
             if problems or not metadata_ok:
@@ -1738,6 +1775,7 @@ class App(tk.Tk):
         script. The app closes itself so its folder can be replaced."""
         self._set_busy(True)
         self.update_button.config(state="disabled")
+        self._show_progress_area()
         self._set_progress_max(100)
         self._set_progress(0)
         self._set_status(self.t("update_downloading", pct=0))
