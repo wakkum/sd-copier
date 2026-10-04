@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.5.0
+
+### Added
+- **The Windows build now installs its own updates.** "Check for Updates"
+  previously only opened the release page, leaving the user to unzip a
+  folder and replace the old one by hand. On Windows it now downloads the
+  new version with a progress bar, unpacks it beside the current folder,
+  and hands over to a small detached script that waits for the app to
+  close, swaps the folders, and starts the new version. Everything happens
+  under the user's own profile, so no admin rights are needed.
+
+  Safeguards: the download host must be github.com or
+  githubusercontent.com over HTTPS; the archive must match the size the
+  release API reported; archive entries that would write outside the
+  destination are rejected; and an archive that does not contain the
+  application is refused. The previous folder is kept until the swap
+  succeeds and is restored if it fails, so a failed update leaves the
+  working app in place. Updating is blocked while a copy is running.
+
+  Mac and Linux, and the unfrozen script, keep the previous behaviour of
+  opening the download page - replacing a .app safely needs code signing.
+
 ## 1.4.0
 
 Interface fixes, both reported from real use on Windows.

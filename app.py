@@ -27,13 +27,15 @@ import threading
 import time
 import tkinter as tk
 import urllib.error
+import urllib.parse
 import urllib.request
 import webbrowser
+import zipfile
 from datetime import date
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-APP_VERSION = "1.4.0"
+APP_VERSION = "1.5.0"
 
 # Public GitHub repo used by "Check for Updates" (reads the latest Release
 # via GitHub's public API - no auth token needed or embedded). Left blank,
@@ -130,6 +132,14 @@ STRINGS = {
                           "has finished first.",
         "eject_ok": "Ejected safely - you can now unplug it.",
         "eject_fail": "Could not eject - you may need to eject it manually.",
+        "update_install_msg": "A newer version is available: {version} (you have {current}).\n\n"
+                              "Download and install it now? The app will close and reopen by "
+                              "itself when it's done.",
+        "update_downloading": "Downloading update... {pct}%",
+        "update_installing": "Installing the update. The app will close and reopen in a moment.",
+        "update_install_failed": "The update could not be installed:\n{error}\n\n"
+                                 "Nothing has been changed - the app still works as before.",
+        "update_busy": "Please wait until the copy has finished before updating.",
         "update_check_button": "Check for Updates",
         "update_not_configured": "Update checking isn't set up yet.",
         "update_check_failed": "Could not check for updates (no internet connection?).",
@@ -187,6 +197,15 @@ STRINGS = {
         "eject_confirm": "Αποσύνδεση και της κάρτας SD και του σκληρού δίσκου τώρα;\n\nΒεβαιωθείτε ότι κάθε αντιγραφή έχει ολοκληρωθεί.",
         "eject_ok": "Αποσυνδέθηκε με ασφάλεια - μπορείτε τώρα να το αφαιρέσετε.",
         "eject_fail": "Δεν ήταν δυνατή η αποσύνδεση - ίσως χρειαστεί να το αφαιρέσετε χειροκίνητα.",
+        "update_install_msg": "Υπάρχει νεότερη έκδοση διαθέσιμη: {version} (έχετε {current}).\n\n"
+                              "Να γίνει λήψη και εγκατάσταση τώρα; Η εφαρμογή θα κλείσει και θα "
+                              "ανοίξει ξανά μόνη της.",
+        "update_downloading": "Λήψη ενημέρωσης... {pct}%",
+        "update_installing": "Εγκατάσταση της ενημέρωσης. Η εφαρμογή θα κλείσει και θα ανοίξει "
+                             "ξανά σε λίγο.",
+        "update_install_failed": "Η ενημέρωση δεν εγκαταστάθηκε:\n{error}\n\n"
+                                 "Δεν άλλαξε τίποτα - η εφαρμογή λειτουργεί όπως πριν.",
+        "update_busy": "Περιμένετε να ολοκληρωθεί η αντιγραφή πριν την ενημέρωση.",
         "update_check_button": "Έλεγχος για Ενημερώσεις",
         "update_not_configured": "Ο έλεγχος ενημερώσεων δεν έχει ρυθμιστεί ακόμα.",
         "update_check_failed": "Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις (πρόβλημα σύνδεσης στο διαδίκτυο;).",
@@ -260,6 +279,15 @@ STRINGS = {
                           "toute copie est terminée.",
         "eject_ok": "Éjecté en toute sécurité - vous pouvez maintenant le débrancher.",
         "eject_fail": "Impossible d'éjecter - vous devrez peut-être l'éjecter manuellement.",
+        "update_install_msg": "Une nouvelle version est disponible : {version} (vous avez "
+                              "{current}).\n\nLa télécharger et l'installer maintenant ? "
+                              "L'application se fermera et se rouvrira toute seule.",
+        "update_downloading": "Téléchargement de la mise à jour... {pct} %",
+        "update_installing": "Installation de la mise à jour. L'application va se fermer et se "
+                             "rouvrir dans un instant.",
+        "update_install_failed": "La mise à jour n'a pas pu être installée :\n{error}\n\n"
+                                 "Rien n'a été modifié - l'application fonctionne comme avant.",
+        "update_busy": "Veuillez attendre la fin de la copie avant de mettre à jour.",
         "update_check_button": "Vérifier les Mises à Jour",
         "update_not_configured": "La vérification des mises à jour n'est pas encore configurée.",
         "update_check_failed": "Impossible de vérifier les mises à jour (pas de connexion internet ?).",
@@ -334,6 +362,16 @@ STRINGS = {
                           "sicher, dass jede Kopie abgeschlossen ist.",
         "eject_ok": "Sicher ausgeworfen - Sie können es jetzt abziehen.",
         "eject_fail": "Auswerfen nicht möglich - Sie müssen es möglicherweise manuell auswerfen.",
+        "update_install_msg": "Eine neuere Version ist verfügbar: {version} (Sie haben "
+                              "{current}).\n\nJetzt herunterladen und installieren? Die App "
+                              "schließt sich und öffnet sich danach von selbst wieder.",
+        "update_downloading": "Update wird heruntergeladen... {pct} %",
+        "update_installing": "Das Update wird installiert. Die App schließt sich und öffnet sich "
+                             "gleich wieder.",
+        "update_install_failed": "Das Update konnte nicht installiert werden:\n{error}\n\n"
+                                 "Es wurde nichts verändert - die App funktioniert wie zuvor.",
+        "update_busy": "Bitte warten Sie, bis das Kopieren abgeschlossen ist, bevor Sie "
+                       "aktualisieren.",
         "update_check_button": "Nach Updates suchen",
         "update_not_configured": "Die Update-Prüfung ist noch nicht eingerichtet.",
         "update_check_failed": "Es konnte nicht nach Updates gesucht werden (keine Internetverbindung?).",
@@ -407,6 +445,15 @@ STRINGS = {
                           "ogni copia sia terminata.",
         "eject_ok": "Espulso in sicurezza - ora puoi scollegarlo.",
         "eject_fail": "Impossibile espellere - potrebbe essere necessario espellerlo manualmente.",
+        "update_install_msg": "È disponibile una versione più recente: {version} (hai la "
+                              "{current}).\n\nScaricarla e installarla adesso? L'app si "
+                              "chiuderà e si riaprirà da sola.",
+        "update_downloading": "Download dell'aggiornamento... {pct}%",
+        "update_installing": "Installazione dell'aggiornamento. L'app si chiuderà e si riaprirà "
+                             "tra poco.",
+        "update_install_failed": "Non è stato possibile installare l'aggiornamento:\n{error}\n\n"
+                                 "Non è stato modificato nulla - l'app funziona come prima.",
+        "update_busy": "Attendi il termine della copia prima di aggiornare.",
         "update_check_button": "Controlla Aggiornamenti",
         "update_not_configured": "Il controllo degli aggiornamenti non è ancora configurato.",
         "update_check_failed": "Impossibile controllare gli aggiornamenti (nessuna connessione "
@@ -749,7 +796,171 @@ def check_for_update(timeout: float = 4.0):
     html_url = data.get("html_url", "")
     if not tag or not html_url:
         return None
-    return {"version": tag.lstrip("v"), "url": html_url}
+
+    # The Windows build can install itself, so pick out that asset. Matching
+    # on the platform word rather than a fixed filename keeps this working if
+    # the release naming ever changes.
+    asset_url, asset_size, asset_name = "", 0, ""
+    want = "windows" if sys.platform.startswith("win") else "mac"
+    for asset in data.get("assets", []):
+        name = str(asset.get("name", ""))
+        if name.lower().endswith(".zip") and want in name.lower():
+            asset_url = asset.get("browser_download_url", "")
+            asset_size = int(asset.get("size", 0) or 0)
+            asset_name = name
+            break
+
+    return {"version": tag.lstrip("v"), "url": html_url,
+            "asset_url": asset_url, "asset_size": asset_size, "asset_name": asset_name}
+
+
+
+# ---------------------------------------------------------------------------
+# Self-update (Windows only)
+#
+# A running .exe cannot overwrite itself, but the app is a onedir build - a
+# folder - so the new version can be unpacked beside it and a small detached
+# script can swap the two once this process has exited. Everything lives
+# under the user's own profile, so no admin rights are involved, and the old
+# folder is kept until the swap succeeds so a failure can roll back.
+# ---------------------------------------------------------------------------
+
+# A release asset URL comes from GitHub's API over a verified connection, but
+# the host is still checked before anything is downloaded and run.
+ALLOWED_DOWNLOAD_HOSTS = ("github.com", "www.github.com")
+
+
+def is_allowed_download_url(url: str) -> bool:
+    parts = urllib.parse.urlsplit(url)
+    host = (parts.hostname or "").lower()
+    return parts.scheme == "https" and (
+        host in ALLOWED_DOWNLOAD_HOSTS or host.endswith(".githubusercontent.com")
+    )
+
+
+def update_work_dir() -> Path:
+    base = os.environ.get("LOCALAPPDATA") or os.environ.get("TEMP") or str(Path.home())
+    return Path(base) / "SDVideoBackup" / "update"
+
+
+def download_update(url: str, dest: Path, expected_size: int = 0,
+                    progress_cb=None, timeout: float = 30.0) -> Path:
+    """Stream a release asset to dest, reporting progress as a 0-100 int."""
+    if not is_allowed_download_url(url):
+        raise ValueError(f"refusing to download from an unexpected host: {url}")
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    req = urllib.request.Request(url, headers={"User-Agent": "sd-video-backup"})
+    with urllib.request.urlopen(req, timeout=timeout, context=ssl_context()) as resp:
+        total = int(resp.headers.get("Content-Length") or expected_size or 0)
+        done = 0
+        with dest.open("wb") as f:
+            while True:
+                chunk = resp.read(COPY_CHUNK_SIZE)
+                if not chunk:
+                    break
+                f.write(chunk)
+                done += len(chunk)
+                if progress_cb and total:
+                    progress_cb(min(100, int(done * 100 / total)))
+
+    if expected_size and dest.stat().st_size != expected_size:
+        dest.unlink(missing_ok=True)
+        raise ValueError("the downloaded file was incomplete")
+    return dest
+
+
+def extract_update(zip_path: Path, staging: Path, exe_name: str) -> Path:
+    """Unpack the archive and return the folder holding the new app."""
+    shutil.rmtree(staging, ignore_errors=True)
+    staging.mkdir(parents=True, exist_ok=True)
+
+    with zipfile.ZipFile(zip_path) as zf:
+        for info in zf.infolist():
+            name = info.filename.replace("\\", "/")
+            # A zip can name entries outside the destination; refuse those
+            # rather than letting an archive write anywhere on disk.
+            if name.startswith("/") or ".." in name.split("/"):
+                raise ValueError(f"unsafe path in update archive: {info.filename}")
+        zf.extractall(staging)
+
+    if (staging / exe_name).exists():
+        root = staging
+    else:
+        subdirs = [p for p in staging.iterdir() if p.is_dir()]
+        root = subdirs[0] if len(subdirs) == 1 else staging
+    if not (root / exe_name).exists():
+        raise ValueError("the update does not contain the application")
+    return root
+
+
+SWAP_SCRIPT = """@echo off
+setlocal enabledelayedexpansion
+set "APP={app}"
+set "NEW={new}"
+set "OLD={old}"
+set "EXE={exe}"
+
+rem Wait for the app to close before touching its folder. ping is used to
+rem pause because timeout needs a console and this runs without one.
+set /a tries=0
+:wait
+tasklist /FI "PID eq {pid}" /NH 2>nul | find /i "{exe}" >nul
+if errorlevel 1 goto ready
+set /a tries+=1
+if !tries! GEQ 60 goto ready
+ping -n 2 127.0.0.1 >nul
+goto wait
+
+:ready
+if exist "%OLD%" rmdir /s /q "%OLD%"
+move "%APP%" "%OLD%" >nul 2>&1
+if errorlevel 1 goto restart_only
+move "%NEW%" "%APP%" >nul 2>&1
+if errorlevel 1 goto rollback
+rmdir /s /q "%OLD%" >nul 2>&1
+start "" "%APP%\\%EXE%"
+goto done
+
+:rollback
+if exist "%APP%" rmdir /s /q "%APP%"
+move "%OLD%" "%APP%" >nul 2>&1
+start "" "%APP%\\%EXE%"
+goto done
+
+:restart_only
+start "" "%APP%\\%EXE%"
+
+:done
+(goto) 2>nul & del "%~f0"
+"""
+
+
+def launch_swap_script(app_dir: Path, new_root: Path, exe_name: str) -> Path:
+    """Write the swap script and start it detached, so it outlives this app."""
+    work = update_work_dir()
+    work.mkdir(parents=True, exist_ok=True)
+    script = work / "apply_update.bat"
+    script.write_text(
+        SWAP_SCRIPT.format(app=app_dir, new=new_root, old=str(app_dir) + ".old",
+                           exe=exe_name, pid=os.getpid()),
+        encoding="utf-8",
+    )
+
+    CREATE_NO_WINDOW = 0x08000000
+    CREATE_NEW_PROCESS_GROUP = 0x00000200
+    subprocess.Popen(
+        ["cmd", "/c", str(script)],
+        cwd=str(work),  # never inside the folder about to be renamed
+        creationflags=CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP,
+        close_fds=True,
+    )
+    return script
+
+
+def can_self_update() -> bool:
+    """Only a frozen Windows build can replace itself this way."""
+    return sys.platform.startswith("win") and getattr(sys, "frozen", False)
 
 
 # ---------------------------------------------------------------------------
@@ -1483,6 +1694,9 @@ class App(tk.Tk):
     # -- Update check (item 8) -------------------------------------------------
 
     def _check_for_updates(self):
+        if str(self.copy_button.cget("state")) == "disabled":
+            messagebox.showinfo(self.t("app_title"), self.t("update_busy"))
+            return
         if not UPDATE_REPO:
             messagebox.showinfo(self.t("app_title"), self.t("update_not_configured"))
             return
@@ -1499,14 +1713,67 @@ class App(tk.Tk):
         if not info:
             messagebox.showinfo(self.t("app_title"), self.t("update_check_failed"))
             return
-        if version_tuple(info["version"]) > version_tuple(APP_VERSION):
+        if version_tuple(info["version"]) <= version_tuple(APP_VERSION):
+            messagebox.showinfo(self.t("app_title"), self.t("update_none", version=APP_VERSION))
+            return
+
+        # Where the app can replace itself, offer to do the whole thing.
+        # Everywhere else, fall back to opening the download page.
+        if can_self_update() and info.get("asset_url"):
             if messagebox.askyesno(
                 self.t("app_title"),
-                self.t("update_available_msg", version=info["version"], current=APP_VERSION),
+                self.t("update_install_msg", version=info["version"], current=APP_VERSION),
             ):
-                webbrowser.open(info["url"])
-        else:
-            messagebox.showinfo(self.t("app_title"), self.t("update_none", version=APP_VERSION))
+                self._install_update(info)
+            return
+
+        if messagebox.askyesno(
+            self.t("app_title"),
+            self.t("update_available_msg", version=info["version"], current=APP_VERSION),
+        ):
+            webbrowser.open(info["url"])
+
+    def _install_update(self, info):
+        """Download the new version, unpack it, and hand over to the swap
+        script. The app closes itself so its folder can be replaced."""
+        self._set_busy(True)
+        self.update_button.config(state="disabled")
+        self._set_progress_max(100)
+        self._set_progress(0)
+        self._set_status(self.t("update_downloading", pct=0))
+
+        def worker():
+            try:
+                work = update_work_dir()
+                archive = work / (info.get("asset_name") or "update.zip")
+                download_update(
+                    info["asset_url"], archive, info.get("asset_size", 0),
+                    progress_cb=lambda pct: self.after(
+                        0, lambda p=pct: (self._set_progress(p),
+                                          self._set_status(self.t("update_downloading", pct=p)))),
+                )
+                exe_name = Path(sys.executable).name
+                new_root = extract_update(archive, work / "staged", exe_name)
+                self.after(0, lambda: self._set_status(self.t("update_installing")))
+                launch_swap_script(Path(sys.executable).parent, new_root, exe_name)
+            except Exception as e:
+                self.after(0, lambda e=e: self._update_failed(e))
+                return
+            # Give the swap script a moment to start waiting on this PID.
+            self.after(800, self._quit_for_update)
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    def _update_failed(self, error):
+        self._set_busy(False)
+        self.update_button.config(state="normal")
+        self._set_progress(0)
+        self._set_status("")
+        messagebox.showerror(self.t("app_title"),
+                             self.t("update_install_failed", error=error))
+
+    def _quit_for_update(self):
+        self.destroy()
 
 
 def main():

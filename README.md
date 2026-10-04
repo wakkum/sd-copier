@@ -114,9 +114,17 @@ first-run warnings above apply either way.
 - **Eject SD Card & Hard Drive** — safely ejects both drives from within
   the app once you're done.
 - **Check for Updates** — looks at this repo's
-  [latest release](https://github.com/wakkum/sd-copier/releases/latest)
-  and offers to open the download page if a newer version exists. No
-  network call is made unless a release actually exists to check against.
+  [latest release](https://github.com/wakkum/sd-copier/releases/latest).
+  On Windows the app installs the update itself: it downloads the release
+  zip, unpacks it next to the current folder, then a detached script waits
+  for the app to exit, swaps the folders and relaunches. The old folder is
+  kept until the swap succeeds, so a failure rolls back rather than
+  leaving a broken install, and it all happens under the user's profile
+  with no admin rights. Downloads are restricted to GitHub hosts over
+  HTTPS and checked against the size the release API reported; archives
+  containing paths outside the destination are refused. On Mac the app
+  offers the download page instead, since replacing a signed `.app` in
+  place is a different problem. Updating is blocked during a copy.
 
 See [autolaunch/](autolaunch/) for optional, opt-in scripts that open the
 app automatically when an SD card is inserted (Mac: fully automatic via a
