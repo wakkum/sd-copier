@@ -123,6 +123,27 @@ The fix, and the rule to preserve:
 Anything added to the bottom bar competes with the form for space. Anything
 added to the form is free.
 
+### The strip only shows what is usable
+
+Pinning the strip solved the missing button but created the opposite
+problem: it reserved its full height permanently. Measured at launch it was
+216px — same-event row 80, Copy 48, eject/update 38, status 30, progress 20
+— which on a 768px-high screen is a third of the window before anything has
+happened, and more at Windows' larger font.
+
+Three of those five rows say nothing at launch, so they are not shown until
+they do: `_show_progress_area()` reveals the progress bar and status line
+when a copy or update starts, and `_show_same_event()` reveals the
+same-event row when a copy finishes. Idle strip is 86px and the window
+opens at 707px rather than 845px.
+
+**The trap:** `pack_forget()` followed by a plain `pack()` sends a widget to
+the *end* of the pack order, not back where it was. For `side="bottom"`
+widgets that silently moves the row — the same-event frame reappeared above
+the form instead of above Copy. Every re-pack therefore passes an explicit
+`before=`: progress before `action_frame`, status before `progress`, and
+the same-event row before `_form_container`. Preserve this if you add a row.
+
 ## 7. Drive detection
 
 `list_candidate_drives()` is per-platform: `/Volumes` on macOS, a
@@ -183,10 +204,17 @@ macOS, Linux and the unfrozen script fall back to opening the release page.
 Replacing a `.app` in place safely needs code signing, which needs the Apple
 Developer Program.
 
-> **Not yet proven in the field.** The swap script has never executed on a
-> real Windows machine. It also cannot be exercised by updating *to* the
-> version that introduces it — the installed copy must already contain this
-> code, so the first genuine test is the release after 1.5.0.
+> **Shipped but not yet proven in the field.** The swap script has never
+> executed on a real Windows machine. It cannot be exercised by updating
+> *to* the version that introduces it, because the installed copy must
+> already contain the swap code — so 1.5.0 and 1.5.1 were both released to
+> make the test possible: install 1.5.0, then let it find 1.5.1. 1.5.1
+> carries no functional change and exists only for that purpose.
+>
+> When testing, read the version back from the app after it reopens rather
+> than assuming success. The designed failure modes both look like "the app
+> is still here": the swap is refused and the old version reopens
+> unchanged, or the move half-fails and the rollback restores it.
 
 ## 9. Build and release
 
@@ -201,7 +229,11 @@ tag or manually against an existing tag. The manual trigger takes a separate
 `ref`, because a tag can predate a fix to the build scripts themselves.
 
 Release order matters: **the release must exist before the build runs**,
-since the workflow uploads onto it.
+since the workflow uploads onto it. Creating the release with
+`gh release create <tag> --target main` makes the tag and the release
+together, which fires the tag-push trigger with the release already in
+place; this is the path used for 1.5.0 and 1.5.1 and both built and
+attached unattended.
 
 Gotchas the CI run exposed, both now fixed but worth not reintroducing:
 `pip install --upgrade pip <other packages>` fails on Windows because pip
@@ -230,6 +262,8 @@ That is why it now lives inside the project rather than in temporary space.
 ## 11. Known gaps
 
 - The Windows self-update has not run end to end on Windows (§8).
+- The mockups in `howto/` are hand-maintained and drift from the UI
+  unless regenerated after a layout change (§10).
 - No warning when an event folder already contains files (§4).
 - `webbrowser.open()` is called on a URL from the GitHub API without
   validating it; low severity, consciously accepted.
