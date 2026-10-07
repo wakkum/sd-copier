@@ -109,6 +109,11 @@ first-run warnings above apply either way.
   card's contents (filenames + sizes) against a small registry file kept
   on the destination drive. If it looks like the same card was already
   backed up, it asks for confirmation instead of silently re-copying.
+- **Report a Problem** — copies `~/.sd_video_backup.log` to the Desktop as
+  `SD_Backup_Report_<date>.txt`, prefixed with the version, platform and
+  selected drives, and opens the folder. The log records startup, each
+  copy and its result, every failed or unverified file, update attempts
+  and any unhandled error with a traceback.
 - **Help / How to use** — opens the full guide inside the app, in whichever
   of the five languages the interface is set to. The separate
   `HOW_TO_USE.pdf` is English and Greek only, so this is the only

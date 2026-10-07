@@ -1,5 +1,34 @@
 # Changelog
 
+## 1.5.4
+
+### Added
+- **The version is shown in the window.** It sits in the title bar and
+  next to the heading. Previously the only way to find out which version
+  was running was to click "Check for Updates" and read the dialog, which
+  is no use when asking someone remotely what they have, or when
+  confirming an update actually took.
+- **A log file, and a "Report a Problem" button.** When something failed
+  on the user's machine there was nothing to inspect: no console, and the
+  dialog gone by the time they described it. The app now logs startup,
+  every copy with its source, destination and result, each failed or
+  unverified file, update attempts, and any unhandled error with its
+  traceback, to `~/.sd_video_backup.log`. Tk errors are routed there too,
+  since Tk otherwise prints them to a console nobody has and carries on.
+  The log is trimmed to its recent half past 512 KB, and a log that
+  cannot be written never stops the app starting.
+
+  "Report a Problem" copies it to the Desktop as
+  `SD_Backup_Report_<date>.txt` with the version, platform and selected
+  drives on top, then opens the folder. Asking a non-technical person for
+  a dotfile in their home folder does not work; this gives them something
+  to attach.
+
+### Changed
+- The in-app help and `HOW_TO_USE.pdf` both document the above, and the
+  guide's screenshots were regenerated: they still showed a window with
+  no Help button, three days after it shipped.
+
 ## 1.5.3
 
 ### Changed

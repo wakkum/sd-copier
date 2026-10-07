@@ -16,6 +16,7 @@ Works on Windows and macOS using only the Python standard library.
 
 import hashlib
 import json
+import logging
 import os
 import re
 import shutil
@@ -26,6 +27,7 @@ import sys
 import threading
 import time
 import tkinter as tk
+import traceback
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -35,7 +37,7 @@ from datetime import date
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-APP_VERSION = "1.5.3"
+APP_VERSION = "1.5.4"
 
 # Public GitHub repo used by "Check for Updates" (reads the latest Release
 # via GitHub's public API - no auth token needed or embedded). Left blank,
@@ -152,6 +154,9 @@ STRINGS = {
         "help_button": "Help / How to use",
         "help_title": "How to use SD Video Backup",
         "help_close": "Close",
+        "report_button": "Report a Problem",
+        "report_saved": "A report has been saved to your Desktop:\n\n{path}\n\nSend that file to whoever set this app up. It lists what the app did and any errors, so they can see what went wrong. It does not contain your videos.",
+        "report_failed": "The report could not be saved: {error}",
         "update_check_button": "Check for Updates",
         "update_not_configured": "Update checking isn't set up yet.",
         "update_check_failed": "Could not check for updates (no internet connection?).",
@@ -232,6 +237,9 @@ STRINGS = {
         "help_button": "Βοήθεια / Οδηγίες χρήσης",
         "help_title": "Οδηγίες χρήσης του SD Video Backup",
         "help_close": "Κλείσιμο",
+        "report_button": "Αναφορά Προβλήματος",
+        "report_saved": "Μια αναφορά αποθηκεύτηκε στην Επιφάνεια Εργασίας:\n\n{path}\n\nΣτείλτε αυτό το αρχείο σε όποιον έστησε την εφαρμογή. Δείχνει τι έκανε η εφαρμογή και τυχόν σφάλματα, ώστε να δει τι πήγε στραβά. Δεν περιέχει τα βίντεό σας.",
+        "report_failed": "Η αναφορά δεν αποθηκεύτηκε: {error}",
         "update_check_button": "Έλεγχος για Ενημερώσεις",
         "update_not_configured": "Ο έλεγχος ενημερώσεων δεν έχει ρυθμιστεί ακόμα.",
         "update_check_failed": "Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις (πρόβλημα σύνδεσης στο διαδίκτυο;).",
@@ -326,6 +334,9 @@ STRINGS = {
         "help_button": "Aide / Mode d'emploi",
         "help_title": "Mode d'emploi de SD Video Backup",
         "help_close": "Fermer",
+        "report_button": "Signaler un Problème",
+        "report_saved": "Un rapport a été enregistré sur votre Bureau :\n\n{path}\n\nEnvoyez ce fichier à la personne qui a installé l'application. Il indique ce que l'application a fait et les erreurs éventuelles, pour qu'elle puisse voir ce qui s'est passé. Il ne contient pas vos vidéos.",
+        "report_failed": "Le rapport n'a pas pu être enregistré : {error}",
         "update_check_button": "Vérifier les Mises à Jour",
         "update_not_configured": "La vérification des mises à jour n'est pas encore configurée.",
         "update_check_failed": "Impossible de vérifier les mises à jour (pas de connexion internet ?).",
@@ -422,6 +433,9 @@ STRINGS = {
         "help_button": "Hilfe / Anleitung",
         "help_title": "Anleitung für SD Video Backup",
         "help_close": "Schließen",
+        "report_button": "Problem melden",
+        "report_saved": "Ein Bericht wurde auf Ihrem Desktop gespeichert:\n\n{path}\n\nSenden Sie diese Datei an die Person, die die App eingerichtet hat. Sie zeigt, was die App getan hat, und eventuelle Fehler, damit sie sehen kann, was schiefgelaufen ist. Ihre Videos sind nicht enthalten.",
+        "report_failed": "Der Bericht konnte nicht gespeichert werden: {error}",
         "update_check_button": "Nach Updates suchen",
         "update_not_configured": "Die Update-Prüfung ist noch nicht eingerichtet.",
         "update_check_failed": "Es konnte nicht nach Updates gesucht werden (keine Internetverbindung?).",
@@ -516,6 +530,9 @@ STRINGS = {
         "help_button": "Aiuto / Istruzioni",
         "help_title": "Istruzioni per SD Video Backup",
         "help_close": "Chiudi",
+        "report_button": "Segnala un Problema",
+        "report_saved": "Un rapporto è stato salvato sulla Scrivania:\n\n{path}\n\nInvia questo file a chi ha configurato l'app. Mostra che cosa ha fatto l'app ed eventuali errori, così può capire che cosa è andato storto. Non contiene i tuoi video.",
+        "report_failed": "Non è stato possibile salvare il rapporto: {error}",
         "update_check_button": "Controlla Aggiornamenti",
         "update_not_configured": "Il controllo degli aggiornamenti non è ancora configurato.",
         "update_check_failed": "Impossibile controllare gli aggiornamenti (nessuna connessione "
@@ -525,6 +542,50 @@ STRINGS = {
                                  "Aprire la pagina di download?",
     },
 }
+
+
+# ---------------------------------------------------------------------------
+# Logging. When something goes wrong on the user's machine there is otherwise
+# nothing to look at: they are not technical, there is no console, and the
+# dialog they saw is gone by the time they describe it. Everything lands in
+# one file next to the config, which "Report a Problem" then hands over.
+# ---------------------------------------------------------------------------
+
+LOG_PATH = Path.home() / ".sd_video_backup.log"
+LOG_MAX_BYTES = 512 * 1024
+
+log = logging.getLogger("sd_video_backup")
+
+
+def setup_logging():
+    """Start logging to LOG_PATH, trimming it first if it has grown large.
+
+    Deliberately not a RotatingFileHandler: a single file is easier for the
+    user to find and send, and this keeps the recent half rather than
+    discarding everything.
+    """
+    try:
+        if LOG_PATH.exists() and LOG_PATH.stat().st_size > LOG_MAX_BYTES:
+            tail = LOG_PATH.read_text(encoding="utf-8", errors="replace")[-LOG_MAX_BYTES // 2:]
+            LOG_PATH.write_text("(earlier entries trimmed)\n" + tail, encoding="utf-8")
+        handler = logging.FileHandler(LOG_PATH, encoding="utf-8")
+    except OSError:
+        # Never let logging itself stop the app from starting.
+        handler = logging.NullHandler()
+    handler.setFormatter(logging.Formatter("%(asctime)s  %(levelname)-7s  %(message)s"))
+    log.setLevel(logging.INFO)
+    log.handlers = [handler]
+    log.propagate = False
+
+    log.info("-" * 60)
+    log.info("started  version=%s  platform=%s  frozen=%s  python=%s",
+             APP_VERSION, sys.platform, getattr(sys, "frozen", False),
+             sys.version.split()[0])
+
+
+def log_exception(where: str, exc: BaseException):
+    log.error("%s: %s: %s", where, type(exc).__name__, exc)
+    log.error("".join(traceback.format_exception(type(exc), exc, exc.__traceback__)).rstrip())
 
 
 # ---------------------------------------------------------------------------
@@ -598,6 +659,17 @@ After a copy, "Add Another Camera to This Event" becomes available. It
 keeps the same date, event name and description, switches to the other
 camera and clears the card field, so the second camera's footage lands in
 the same event folder instead of making a new one.
+
+IF SOMETHING GOES WRONG
+
+Click "Report a Problem". The app saves a file on your Desktop called
+SD_Backup_Report_ followed by today's date, and opens the folder so you
+can see it. Send that file to whoever set the app up: it records what the
+app did and any errors, which is usually enough to work out what
+happened. It does not contain your videos.
+
+The version number is shown next to the title at the top of the window.
+Worth mentioning whenever you report something.
 
 KEEPING THE APP UP TO DATE
 
@@ -696,6 +768,17 @@ Backup". Ανοίξτε τον φάκελο και κάντε διπλό κλι�
 Event". Κρατά την ίδια ημερομηνία, όνομα και περιγραφή, αλλάζει στην άλλη
 κάμερα και καθαρίζει το πεδίο της κάρτας, ώστε το υλικό της δεύτερης
 κάμερας να μπει στον ίδιο φάκελο συμβάντος αντί να δημιουργηθεί νέος.
+
+ΑΝ ΚΑΤΙ ΠΑΕΙ ΣΤΡΑΒΑ
+
+Πατήστε "Report a Problem". Η εφαρμογή αποθηκεύει στην Επιφάνεια Εργασίας
+ένα αρχείο με όνομα SD_Backup_Report_ και τη σημερινή ημερομηνία, και
+ανοίγει τον φάκελο για να το δείτε. Στείλτε αυτό το αρχείο σε όποιον
+έστησε την εφαρμογή: καταγράφει τι έκανε η εφαρμογή και τυχόν σφάλματα,
+που συνήθως αρκούν για να βρεθεί τι συνέβη. Δεν περιέχει τα βίντεό σας.
+
+Ο αριθμός έκδοσης εμφανίζεται δίπλα στον τίτλο, στο πάνω μέρος του
+παραθύρου. Αξίζει να τον αναφέρετε όποτε δηλώνετε κάτι.
 
 ΔΙΑΤΗΡΩΝΤΑΣ ΤΗΝ ΕΦΑΡΜΟΓΗ ΕΝΗΜΕΡΩΜΕΝΗ
 
@@ -799,6 +882,18 @@ La date, le nom de l'événement et la description sont conservés,
 l'application passe à l'autre caméra et vide le champ de la carte, afin
 que les images de la deuxième caméra arrivent dans le même dossier
 d'événement au lieu d'en créer un nouveau.
+
+EN CAS DE PROBLÈME
+
+Cliquez sur « Report a Problem ». L'application enregistre sur votre
+Bureau un fichier nommé SD_Backup_Report_ suivi de la date du jour, et
+ouvre le dossier pour que vous le voyiez. Envoyez ce fichier à la
+personne qui a installé l'application : il indique ce que l'application a
+fait et les erreurs éventuelles, ce qui suffit en général à comprendre ce
+qui s'est passé. Il ne contient pas vos vidéos.
+
+Le numéro de version est affiché à côté du titre, en haut de la fenêtre.
+Il est utile de le mentionner quand vous signalez quelque chose.
 
 GARDER L'APPLICATION À JOUR
 
@@ -904,6 +999,18 @@ wechselt zur anderen Kamera und leert das Feld für die Karte, damit das
 Material der zweiten Kamera im selben Ereignisordner landet, statt einen
 neuen anzulegen.
 
+WENN ETWAS SCHIEFGEHT
+
+Klicken Sie auf „Report a Problem“. Die App speichert auf Ihrem Desktop
+eine Datei namens SD_Backup_Report_ mit dem heutigen Datum und öffnet den
+Ordner, damit Sie sie sehen. Senden Sie diese Datei an die Person, die
+die App eingerichtet hat: sie hält fest, was die App getan hat, und
+eventuelle Fehler, was meist genügt, um herauszufinden, was passiert ist.
+Ihre Videos sind nicht enthalten.
+
+Die Versionsnummer steht oben im Fenster neben dem Titel. Es lohnt sich,
+sie bei jeder Meldung anzugeben.
+
 DIE APP AKTUELL HALTEN
 
 Klicken Sie unten rechts auf „Check for Updates“. Unter Windows kann die
@@ -1005,6 +1112,17 @@ Mantiene la stessa data, lo stesso nome evento e la stessa descrizione,
 passa all'altra videocamera e svuota il campo della scheda, così le
 riprese della seconda videocamera finiscono nella stessa cartella
 dell'evento invece di crearne una nuova.
+
+SE QUALCOSA VA STORTO
+
+Premi "Report a Problem". L'app salva sulla Scrivania un file chiamato
+SD_Backup_Report_ seguito dalla data di oggi e apre la cartella perché tu
+lo veda. Invia quel file a chi ha configurato l'app: registra che cosa ha
+fatto l'app ed eventuali errori, di solito abbastanza per capire che cosa
+è successo. Non contiene i tuoi video.
+
+Il numero di versione è mostrato accanto al titolo, in alto nella
+finestra. Vale la pena indicarlo ogni volta che segnali qualcosa.
 
 TENERE L'APP AGGIORNATA
 
@@ -1567,10 +1685,18 @@ class App(tk.Tk):
         self.last_event_info = None
         self._pending_event_num = None
 
+        # Tk prints callback errors to a console nobody has and carries on,
+        # so route them into the log as well.
+        self.report_callback_exception = self._log_tk_exception
+
         self._build_ui()
         self._apply_language()
         self._refresh_drive_suggestions()
         self._size_to_content()
+
+    @staticmethod
+    def _log_tk_exception(exc_type, exc_value, exc_tb):
+        log_exception("unhandled error in the interface", exc_value)
 
     # -- Translation helper ---------------------------------------------------
 
@@ -1587,6 +1713,8 @@ class App(tk.Tk):
         top_row.pack(side="top", fill="x", **pad)
         self.header = tk.Label(top_row, font=("Helvetica", 16, "bold"))
         self.header.pack(side="left")
+        self.version_label = tk.Label(top_row, font=("Helvetica", 10), fg="gray")
+        self.version_label.pack(side="left", padx=(8, 0), pady=(6, 0))
 
         lang_box = tk.Frame(top_row)
         lang_box.pack(side="right")
@@ -1634,6 +1762,8 @@ class App(tk.Tk):
         # the bottom, which is kept as short as it can be.
         self.help_button = tk.Button(utility_row, command=self._open_help)
         self.help_button.pack(side="left", padx=(8, 0))
+        self.report_button = tk.Button(utility_row, command=self._save_report)
+        self.report_button.pack(side="left", padx=(8, 0))
 
         # Details
         self.details_frame = tk.LabelFrame(form)
@@ -1838,8 +1968,13 @@ class App(tk.Tk):
         self._refresh_drive_suggestions()
 
     def _apply_language(self):
-        self.title(self.t("app_title"))
+        # The version goes in the title bar and beside the heading: without
+        # it the only way to find out which version is running is to click
+        # "Check for Updates", which is no use when asking someone remotely
+        # what they have, or when confirming an update actually took.
+        self.title(f"{self.t('app_title')}  -  {APP_VERSION}")
         self.header.config(text=self.t("app_title"))
+        self.version_label.config(text=f"v{APP_VERSION}")
         self.language_label.config(text=self.t("language_label"))
         self.src_frame.config(text=self.t("source_group"))
         self.dst_frame.config(text=self.t("dest_group"))
@@ -1857,6 +1992,7 @@ class App(tk.Tk):
         self.important_check.config(text=self.t("important_check"))
         self.same_event_button.config(text=self.t("same_event_button"))
         self.help_button.config(text=self.t("help_button"))
+        self.report_button.config(text=self.t("report_button"))
         self.same_event_hint_label.config(
             text=self.t("same_event_hint") if self.last_event_info else self.t("same_event_hint_disabled")
         )
@@ -1956,6 +2092,10 @@ class App(tk.Tk):
                 event_num_override = pinned["event_num"]
         self._pending_event_num = None
 
+        log.info("copy starting: date=%s camera=%s event=%r important=%s",
+                 date_str, camera, event_name, important)
+        log.info("  source=%s", source)
+        log.info("  destination=%s", dest_root)
         self._set_busy(True)
         self._show_progress_area()
         self.status_label.config(text=self.t("status_scanning"))
@@ -2039,6 +2179,7 @@ class App(tk.Tk):
                 dest_file = unique_destination(camera_folder, src_file.name)
                 source_digest = copy_with_hash(src_file, dest_file)
             except OSError as e:
+                log.error("copy failed: %s: %s", src_file.name, e)
                 failed.append((src_file.name, str(e)))
                 self._set_progress(i)
                 continue
@@ -2051,6 +2192,7 @@ class App(tk.Tk):
             if verified:
                 copied += 1
             else:
+                log.error("verification failed: %s", src_file.name)
                 unverified.append(src_file.name)
             self._set_progress(i)
 
@@ -2090,6 +2232,9 @@ class App(tk.Tk):
             "description": description, "important": important, "event_num": event_num,
         } if copied > 0 else None
 
+        log.info("copy finished: %s of %s verified, %s failed, %s unverified, metadata_ok=%s",
+                 copied, total, len(failed), len(unverified), metadata_ok)
+        log.info("  into %s", event_folder)
         self._on_done(copied, total, failed, unverified, event_folder, event_info, metadata_ok)
 
     @staticmethod
@@ -2331,6 +2476,42 @@ class App(tk.Tk):
             else:
                 text.insert("end", body + "\n", (kind,))
 
+    def _save_report(self):
+        """Put the log somewhere the user can actually find and send.
+
+        Asking a non-technical person for a file in a dotted path in their
+        home folder does not work, so it is copied to the Desktop with a
+        dated name and the folder is opened on it.
+        """
+        stamp = time.strftime("%Y-%m-%d_%H%M")
+        desktop = Path.home() / "Desktop"
+        target = (desktop if desktop.is_dir() else Path.home()) / f"SD_Backup_Report_{stamp}.txt"
+
+        header = [
+            "SD Card Video Backup - problem report",
+            f"Written:   {time.strftime('%Y-%m-%d %H:%M:%S')}",
+            f"Version:   {APP_VERSION}",
+            f"Platform:  {sys.platform}  (packaged app: {bool(getattr(sys, 'frozen', False))})",
+            f"Language:  {self.lang}",
+            f"SD card:   {self.source_path.get().strip() or '(none selected)'}",
+            f"Hard disk: {self.dest_path.get().strip() or '(none selected)'}",
+            "",
+            "--- log ---",
+            "",
+        ]
+        try:
+            body = LOG_PATH.read_text(encoding="utf-8", errors="replace") \
+                if LOG_PATH.exists() else "(no log file yet)"
+            target.write_text("\n".join(header) + body, encoding="utf-8")
+        except OSError as e:
+            log_exception("saving the report", e)
+            messagebox.showerror(self.t("app_title"), self.t("report_failed", error=e))
+            return
+
+        log.info("problem report written to %s", target)
+        open_in_file_manager(target.parent)
+        messagebox.showinfo(self.t("app_title"), self.t("report_saved", path=target))
+
     def _open_help(self):
         """Show the guide for the language the interface is set to."""
         win = tk.Toplevel(self)
@@ -2508,8 +2689,10 @@ class App(tk.Tk):
                 exe_name = Path(sys.executable).name
                 new_root = extract_update(archive, work / "staged", exe_name)
                 self.after(0, lambda: self._set_status(self.t("update_installing")))
+                log.info("update: installing %s over %s", new_root, Path(sys.executable).parent)
                 launch_swap_script(Path(sys.executable).parent, new_root, exe_name)
             except Exception as e:
+                log_exception("update failed", e)
                 self.after(0, lambda e=e: self._update_failed(e))
                 return
             # Give the swap script a moment to start waiting on this PID.
@@ -2530,6 +2713,8 @@ class App(tk.Tk):
 
 
 def main():
+    setup_logging()
+    sys.excepthook = lambda t, v, tb: log_exception("unhandled error", v)
     app = App()
     app.mainloop()
 

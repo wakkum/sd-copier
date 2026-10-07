@@ -216,6 +216,32 @@ Developer Program.
 > is still here": the swap is refused and the old version reopens
 > unchanged, or the move half-fails and the rollback restores it.
 
+## 8a. Logging and problem reports
+
+`setup_logging()` writes to `~/.sd_video_backup.log`: startup with version
+and platform, each copy with source, destination and result, every failed or
+unverified file, update attempts, and unhandled errors with tracebacks.
+`App.report_callback_exception` is redirected there too, because Tk
+otherwise prints callback errors to a console the user does not have and
+carries on as if nothing happened.
+
+Two deliberate choices. It is a single file trimmed to its recent half past
+512 KB rather than a rotating set, because the user has to find and send it.
+And a log that cannot be opened falls back to a `NullHandler`, so a
+read-only home directory can never stop the app starting.
+
+"Report a Problem" copies the log to the Desktop as
+`SD_Backup_Report_<date>.txt` with version, platform, language and the
+selected drives on top, then opens the folder. Asking a non-technical person
+for a dotfile in their home directory does not work.
+
+**Automatic upload is deliberately not implemented.** Opening a GitHub issue
+needs a token, and a token in a public distributed binary is extractable and
+grants write access to the repo — the same reason the updater uses a public
+repo rather than a private one with an embedded credential. Logs also carry
+folder names and drive labels, so sending them anywhere should stay an
+explicit act by the user, not a background upload.
+
 ## 9. Build and release
 
 PyInstaller does not cross-compile, so each platform builds on itself:
@@ -269,7 +295,12 @@ That is why it now lives inside the project rather than in temporary space.
 
 - The Windows self-update has not run end to end on Windows (§8).
 - The mockups in `howto/` are hand-maintained and drift from the UI
-  unless regenerated after a layout change (§10).
+  unless regenerated after a layout change (§10). This has already
+  happened once: they showed a window with no Help button for three days
+  after it shipped.
+- There are no automated tests. Everything verified so far has been ad hoc
+  and discarded, including checks that caught real bugs (string-key
+  parity, pack ordering, the zip traversal guard).
 - No warning when an event folder already contains files (§4).
 - `webbrowser.open()` is called on a URL from the GitHub API without
   validating it; low severity, consciously accepted.
