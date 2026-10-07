@@ -35,7 +35,7 @@ from datetime import date
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-APP_VERSION = "1.5.2"
+APP_VERSION = "1.5.3"
 
 # Public GitHub repo used by "Check for Updates" (reads the latest Release
 # via GitHub's public API - no auth token needed or embedded). Left blank,
@@ -2254,29 +2254,124 @@ class App(tk.Tk):
 
     # -- History viewer (item 2) ----------------------------------------------
 
+    # The help text is stored as plain paragraphs; these turn it into
+    # something that reads like a document rather than a dumped text file.
+    HELP_STEP_RE = re.compile(r"^ {2}(\d+)\.\s+(.*)$")
+    HELP_BULLET_RE = re.compile(r"^(\s*)-\s+(.*)$")
+
+    @classmethod
+    def _parse_help(cls, raw: str):
+        """Group the raw text into (kind, text) blocks.
+
+        Wrapped lines are rejoined into one block so the Text widget can do
+        the wrapping itself at whatever width the window happens to be,
+        rather than keeping the hard line breaks the source was typed with.
+        """
+        blocks, kind, buf, num = [], None, [], None
+
+        def flush():
+            nonlocal kind, buf, num
+            if buf:
+                blocks.append((kind, num, " ".join(buf)))
+            kind, buf, num = None, [], None
+
+        for line in raw.splitlines():
+            stripped = line.strip()
+            if not stripped:
+                flush()
+                continue
+
+            # Unindented and entirely upper case is a section heading. This
+            # holds for Greek and for accented Latin, both checked.
+            if not line.startswith(" ") and stripped == stripped.upper():
+                flush()
+                blocks.append(("h1", None, stripped))
+                continue
+
+            step = cls.HELP_STEP_RE.match(line)
+            if step:
+                flush()
+                kind, num, buf = "step", step.group(1), [step.group(2)]
+                continue
+
+            bullet = cls.HELP_BULLET_RE.match(line)
+            if bullet:
+                flush()
+                kind = "sub" if len(bullet.group(1)) >= 6 else "bullet"
+                buf = [bullet.group(2)]
+                continue
+
+            if kind is None:
+                kind = "indented" if line.startswith("     ") else "body"
+            buf.append(stripped)
+
+        flush()
+        return blocks
+
+    def _render_help(self, text):
+        base = ("Helvetica", 12)
+        text.tag_config("h1", font=("Helvetica", 13, "bold"), foreground="#2e7d32",
+                        spacing1=16, spacing3=7)
+        text.tag_config("body", font=base, spacing3=9, lmargin1=2, lmargin2=2)
+        text.tag_config("indented", font=base, spacing3=9, lmargin1=26, lmargin2=26)
+        text.tag_config("step", font=base, spacing3=7, lmargin1=20, lmargin2=38)
+        text.tag_config("stepnum", font=("Helvetica", 12, "bold"), foreground="#2e7d32")
+        text.tag_config("bullet", font=base, spacing3=6, lmargin1=20, lmargin2=34)
+        text.tag_config("sub", font=base, spacing3=4, lmargin1=44, lmargin2=58)
+
+        for kind, num, body in self._parse_help(HELP_TEXT.get(self.lang, HELP_TEXT["en"])):
+            if kind == "h1":
+                text.insert("end", body + "\n", ("h1",))
+            elif kind == "step":
+                text.insert("end", f"{num}.  ", ("stepnum", "step"))
+                text.insert("end", body + "\n", ("step",))
+            elif kind in ("bullet", "sub"):
+                text.insert("end", "\u2022  ", (kind,))
+                text.insert("end", body + "\n", (kind,))
+            else:
+                text.insert("end", body + "\n", (kind,))
+
     def _open_help(self):
         """Show the guide for the language the interface is set to."""
         win = tk.Toplevel(self)
         win.title(self.t("help_title"))
-        win.geometry("700x600")
-        win.minsize(480, 360)
+        win.geometry("720x640")
+        win.minsize(460, 340)
+        win.configure(bg="#ffffff")
 
-        text_frame = tk.Frame(win)
-        text_frame.pack(fill="both", expand=True, padx=10, pady=(10, 6))
-        scrollbar = tk.Scrollbar(text_frame)
+        header = tk.Frame(win, bg="#ffffff")
+        header.pack(fill="x", padx=22, pady=(18, 0))
+        tk.Label(header, text=self.t("help_title"), bg="#ffffff", fg="#1a1a1a",
+                 font=("Helvetica", 16, "bold"), anchor="w").pack(fill="x")
+        tk.Frame(header, height=1, bg="#dddddd").pack(fill="x", pady=(10, 0))
+
+        body = tk.Frame(win, bg="#ffffff")
+        body.pack(fill="both", expand=True, padx=22, pady=(6, 0))
+        scrollbar = ttk.Scrollbar(body, orient="vertical")
         scrollbar.pack(side="right", fill="y")
-        # A fixed-pitch font keeps the hand-indented lists lined up.
-        text_widget = tk.Text(text_frame, wrap="word", yscrollcommand=scrollbar.set,
-                              font=("Courier New", 11), padx=8, pady=6)
-        text_widget.pack(side="left", fill="both", expand=True)
-        scrollbar.config(command=text_widget.yview)
+        text = tk.Text(body, wrap="word", yscrollcommand=scrollbar.set,
+                       bg="#ffffff", fg="#1a1a1a", relief="flat", highlightthickness=0,
+                       padx=0, pady=8, cursor="arrow", spacing2=3)
+        text.pack(side="left", fill="both", expand=True)
+        scrollbar.config(command=text.yview)
 
-        text_widget.insert("1.0", HELP_TEXT.get(self.lang, HELP_TEXT["en"]))
-        text_widget.config(state="disabled")
+        self._render_help(text)
+        text.config(state="disabled")
 
-        tk.Button(win, text=self.t("help_close"), command=win.destroy).pack(pady=(0, 10))
+        footer = tk.Frame(win, bg="#ffffff")
+        footer.pack(fill="x", padx=22, pady=(8, 16))
+        tk.Button(footer, text=self.t("help_close"), command=win.destroy,
+                  width=12).pack(side="right")
+
+        def wheel(event):
+            text.yview_scroll(1 if (event.num == 5 or getattr(event, "delta", 0) < 0)
+                              else -1, "units")
+        for seq in ("<MouseWheel>", "<Button-4>", "<Button-5>"):
+            text.bind(seq, wheel)
+        win.bind("<Escape>", lambda _e: win.destroy())
+
         win.transient(self)
-        text_widget.focus_set()
+        text.focus_set()
 
     def _open_history(self):
         dest_root = self.dest_path.get().strip()

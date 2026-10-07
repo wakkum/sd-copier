@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.5.3
+
+### Changed
+- **The Help window reads like a document rather than a text dump.**
+  Section headings are bold and green, steps carry a bold number with
+  hanging indent, bullets are real bullets at two levels, and the body is
+  a proportional font on white with a titled header and a rule. The text
+  is reflowed rather than shown with the line breaks it was typed with, so
+  it wraps to the window width instead of being locked to a fixed column.
+  Verified that no content is lost in the reflow, and that all five
+  languages parse to the same structure: 6 headings, 7 steps, 9 bullets,
+  5 sub-bullets.
+
 ## 1.5.2
 
 ### Added
