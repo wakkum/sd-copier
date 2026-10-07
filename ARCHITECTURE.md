@@ -235,12 +235,38 @@ read-only home directory can never stop the app starting.
 selected drives on top, then opens the folder. Asking a non-technical person
 for a dotfile in their home directory does not work.
 
-**Automatic upload is deliberately not implemented.** Opening a GitHub issue
-needs a token, and a token in a public distributed binary is extractable and
-grants write access to the repo — the same reason the updater uses a public
-repo rather than a private one with an embedded credential. Logs also carry
-folder names and drive labels, so sending them anywhere should stay an
-explicit act by the user, not a background upload.
+### Uploading a report
+
+`report-worker/` is a Cloudflare Worker that receives a report, stores the
+full log in R2, and opens a GitHub issue summarising it.
+
+**The point of the Worker is the token.** Opening an issue needs one, and a
+token inside a binary handed to users is extractable with a text editor — the
+same constraint that made the updater use a public repo rather than a private
+one with an embedded credential. Moving it server-side removes the constraint
+entirely: the app posts anonymously and holds no GitHub access at all, so the
+reports repo can be private even though the app's own repo is public. That
+matters, because a report carries folder names, drive labels and file paths,
+which for this app means event and people names.
+
+`REPORT_ENDPOINT` is blank in the shipped source. With it blank the button
+behaves exactly as before and writes only to the Desktop, so the feature is
+inert until someone deploys the Worker and fills it in.
+
+The endpoint has no user accounts and so is necessarily open. `REPORT_KEY`
+ships inside the app and is therefore friction, not security; the design
+assumes anyone can post. Bodies are capped at 256 KB, issue creation is
+capped per hour when the KV namespace is bound, and the token is scoped to
+one private repo. Worst case someone wastes free-tier quota.
+
+Two ordering decisions worth preserving: the Desktop copy is written
+**before** any upload is attempted and kept regardless, so a dead connection
+never loses a report; and if R2 succeeds but GitHub fails, the Worker returns
+success rather than an error, because the report is safely stored and telling
+the user it failed would invite them to give up.
+
+The app asks before every upload and shows what is being sent. Do not make
+this silent or remembered: it is a disclosure, not a preference.
 
 ## 9. Build and release
 

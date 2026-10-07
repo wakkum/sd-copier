@@ -1,0 +1,22 @@
+name = "sd-copier-reports"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# Full logs land here. Create with:
+#   wrangler r2 bucket create sd-copier-reports
+[[r2_buckets]]
+binding = "REPORTS"
+bucket_name = "sd-copier-reports"
+
+# Optional: caps how many issues can be opened per hour. Without it the
+# Worker still runs, it just does not rate limit. Create with:
+#   wrangler kv namespace create REPORTS_KV
+# then paste the id below and uncomment.
+# [[kv_namespaces]]
+# binding = "REPORTS_KV"
+# id = "<paste the id wrangler prints>"
+
+[vars]
+# The repo issues are opened in. Use a PRIVATE repo: reports contain folder
+# names and drive labels, which for this app means event and people names.
+GITHUB_REPO = "wakkum/sd-copier-reports"

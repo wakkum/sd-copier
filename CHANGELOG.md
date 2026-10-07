@@ -24,6 +24,17 @@
   a dotfile in their home folder does not work; this gives them something
   to attach.
 
+- **One-click problem reports, if the endpoint is deployed.**
+  `report-worker/` is a Cloudflare Worker that takes a report, stores the
+  full log in R2 and opens a GitHub issue. The user needs no GitHub
+  account and the app holds no credential: the token lives in the Worker,
+  which is what allows the reports repo to be private while the app's own
+  repo is public. `REPORT_ENDPOINT` is blank in the source, so until it is
+  deployed and filled in the button behaves exactly as before. The Desktop
+  copy is written before any upload and kept regardless, so a failed send
+  never loses the report, and the app asks before every upload showing
+  what is being sent.
+
 ### Changed
 - The in-app help and `HOW_TO_USE.pdf` both document the above, and the
   guide's screenshots were regenerated: they still showed a window with

@@ -45,6 +45,13 @@ APP_VERSION = "1.5.4"
 # calls are made.
 UPDATE_REPO = "wakkum/sd-copier"
 
+# Problem reports. Blank until the Worker in report-worker/ is deployed, in
+# which case "Report a Problem" just writes the file to the Desktop. The key
+# ships inside the app so it is friction, not security - see that folder's
+# README. No GitHub credential is ever held here: the Worker owns it.
+REPORT_ENDPOINT = ""
+REPORT_KEY = ""
+
 CONFIG_PATH = Path.home() / ".sd_video_backup_config.json"
 REGISTRY_FILENAME = ".sd_backup_registry.json"
 
@@ -157,6 +164,9 @@ STRINGS = {
         "report_button": "Report a Problem",
         "report_saved": "A report has been saved to your Desktop:\n\n{path}\n\nSend that file to whoever set this app up. It lists what the app did and any errors, so they can see what went wrong. It does not contain your videos.",
         "report_failed": "The report could not be saved: {error}",
+        "report_ask": "This will send a problem report to the person who set up this app.\n\nIt contains: the app version, the type of computer, this computer's name, the folders you selected, and the app's log of what it did and any errors.\n\nIt does NOT contain your videos.\n\nSend it now?",
+        "report_sent": "Thank you - the report has been sent.\n\nA copy has also been saved to your Desktop:\n{path}",
+        "report_send_failed": "The report could not be sent ({error}).\n\nIt has been saved to your Desktop instead:\n\n{path}\n\nPlease send that file to whoever set this app up.",
         "update_check_button": "Check for Updates",
         "update_not_configured": "Update checking isn't set up yet.",
         "update_check_failed": "Could not check for updates (no internet connection?).",
@@ -240,6 +250,9 @@ STRINGS = {
         "report_button": "Αναφορά Προβλήματος",
         "report_saved": "Μια αναφορά αποθηκεύτηκε στην Επιφάνεια Εργασίας:\n\n{path}\n\nΣτείλτε αυτό το αρχείο σε όποιον έστησε την εφαρμογή. Δείχνει τι έκανε η εφαρμογή και τυχόν σφάλματα, ώστε να δει τι πήγε στραβά. Δεν περιέχει τα βίντεό σας.",
         "report_failed": "Η αναφορά δεν αποθηκεύτηκε: {error}",
+        "report_ask": "Αυτό θα στείλει μια αναφορά προβλήματος σε όποιον έστησε την εφαρμογή.\n\nΠεριέχει: την έκδοση της εφαρμογής, τον τύπο του υπολογιστή, το όνομα αυτού του υπολογιστή, τους φακέλους που επιλέξατε και το αρχείο καταγραφής με ό,τι έκανε η εφαρμογή και τυχόν σφάλματα.\n\nΔΕΝ περιέχει τα βίντεό σας.\n\nΝα σταλεί τώρα;",
+        "report_sent": "Ευχαριστούμε - η αναφορά στάλθηκε.\n\nΈνα αντίγραφο αποθηκεύτηκε επίσης στην Επιφάνεια Εργασίας:\n{path}",
+        "report_send_failed": "Η αναφορά δεν στάλθηκε ({error}).\n\nΑποθηκεύτηκε στην Επιφάνεια Εργασίας:\n\n{path}\n\nΣτείλτε αυτό το αρχείο σε όποιον έστησε την εφαρμογή.",
         "update_check_button": "Έλεγχος για Ενημερώσεις",
         "update_not_configured": "Ο έλεγχος ενημερώσεων δεν έχει ρυθμιστεί ακόμα.",
         "update_check_failed": "Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις (πρόβλημα σύνδεσης στο διαδίκτυο;).",
@@ -337,6 +350,9 @@ STRINGS = {
         "report_button": "Signaler un Problème",
         "report_saved": "Un rapport a été enregistré sur votre Bureau :\n\n{path}\n\nEnvoyez ce fichier à la personne qui a installé l'application. Il indique ce que l'application a fait et les erreurs éventuelles, pour qu'elle puisse voir ce qui s'est passé. Il ne contient pas vos vidéos.",
         "report_failed": "Le rapport n'a pas pu être enregistré : {error}",
+        "report_ask": "Ceci enverra un rapport de problème à la personne qui a installé cette application.\n\nIl contient : la version de l'application, le type d'ordinateur, le nom de cet ordinateur, les dossiers que vous avez sélectionnés, et le journal de ce que l'application a fait et des erreurs éventuelles.\n\nIl NE contient PAS vos vidéos.\n\nL'envoyer maintenant ?",
+        "report_sent": "Merci, le rapport a été envoyé.\n\nUne copie a également été enregistrée sur votre Bureau :\n{path}",
+        "report_send_failed": "Le rapport n'a pas pu être envoyé ({error}).\n\nIl a été enregistré sur votre Bureau :\n\n{path}\n\nMerci d'envoyer ce fichier à la personne qui a installé l'application.",
         "update_check_button": "Vérifier les Mises à Jour",
         "update_not_configured": "La vérification des mises à jour n'est pas encore configurée.",
         "update_check_failed": "Impossible de vérifier les mises à jour (pas de connexion internet ?).",
@@ -436,6 +452,9 @@ STRINGS = {
         "report_button": "Problem melden",
         "report_saved": "Ein Bericht wurde auf Ihrem Desktop gespeichert:\n\n{path}\n\nSenden Sie diese Datei an die Person, die die App eingerichtet hat. Sie zeigt, was die App getan hat, und eventuelle Fehler, damit sie sehen kann, was schiefgelaufen ist. Ihre Videos sind nicht enthalten.",
         "report_failed": "Der Bericht konnte nicht gespeichert werden: {error}",
+        "report_ask": "Dies sendet einen Problembericht an die Person, die diese App eingerichtet hat.\n\nEnthalten sind: die Version der App, die Art des Computers, der Name dieses Computers, die von Ihnen gewählten Ordner und das Protokoll dessen, was die App getan hat, samt eventueller Fehler.\n\nIhre Videos sind NICHT enthalten.\n\nJetzt senden?",
+        "report_sent": "Danke, der Bericht wurde gesendet.\n\nEine Kopie wurde zusätzlich auf Ihrem Desktop gespeichert:\n{path}",
+        "report_send_failed": "Der Bericht konnte nicht gesendet werden ({error}).\n\nEr wurde stattdessen auf Ihrem Desktop gespeichert:\n\n{path}\n\nBitte senden Sie diese Datei an die Person, die die App eingerichtet hat.",
         "update_check_button": "Nach Updates suchen",
         "update_not_configured": "Die Update-Prüfung ist noch nicht eingerichtet.",
         "update_check_failed": "Es konnte nicht nach Updates gesucht werden (keine Internetverbindung?).",
@@ -533,6 +552,9 @@ STRINGS = {
         "report_button": "Segnala un Problema",
         "report_saved": "Un rapporto è stato salvato sulla Scrivania:\n\n{path}\n\nInvia questo file a chi ha configurato l'app. Mostra che cosa ha fatto l'app ed eventuali errori, così può capire che cosa è andato storto. Non contiene i tuoi video.",
         "report_failed": "Non è stato possibile salvare il rapporto: {error}",
+        "report_ask": "Questo invierà un rapporto sul problema a chi ha configurato questa app.\n\nContiene: la versione dell'app, il tipo di computer, il nome di questo computer, le cartelle che hai selezionato e il registro di quello che l'app ha fatto e degli eventuali errori.\n\nNON contiene i tuoi video.\n\nInviarlo adesso?",
+        "report_sent": "Grazie, il rapporto è stato inviato.\n\nUna copia è stata salvata anche sulla Scrivania:\n{path}",
+        "report_send_failed": "Non è stato possibile inviare il rapporto ({error}).\n\nÈ stato salvato sulla Scrivania:\n\n{path}\n\nInvia quel file a chi ha configurato l'app.",
         "update_check_button": "Controlla Aggiornamenti",
         "update_not_configured": "Il controllo degli aggiornamenti non è ancora configurato.",
         "update_check_failed": "Impossibile controllare gli aggiornamenti (nessuna connessione "
@@ -586,6 +608,47 @@ def setup_logging():
 def log_exception(where: str, exc: BaseException):
     log.error("%s: %s: %s", where, type(exc).__name__, exc)
     log.error("".join(traceback.format_exception(type(exc), exc, exc.__traceback__)).rstrip())
+
+
+def machine_name() -> str:
+    """Something to tell two users' reports apart.
+
+    Every issue is opened by the token's owner, so without this they all
+    look identical once there is more than one person using the app.
+    """
+    import getpass
+    import socket
+    try:
+        host = socket.gethostname()
+    except Exception:
+        host = "?"
+    try:
+        user = getpass.getuser()
+    except Exception:
+        user = "?"
+    return f"{user}@{host}"
+
+
+def upload_report(payload: dict, timeout: float = 20.0) -> dict:
+    """POST a report to the Worker. Raises on anything that is not a success."""
+    if not REPORT_ENDPOINT:
+        raise ValueError("no report endpoint configured")
+    if not is_allowed_report_url(REPORT_ENDPOINT):
+        raise ValueError(f"refusing to send to an unexpected endpoint: {REPORT_ENDPOINT}")
+
+    data = json.dumps(payload).encode("utf-8")
+    headers = {"content-type": "application/json", "user-agent": "sd-video-backup"}
+    if REPORT_KEY:
+        headers["x-report-key"] = REPORT_KEY
+    req = urllib.request.Request(REPORT_ENDPOINT, data=data, headers=headers, method="POST")
+    with urllib.request.urlopen(req, timeout=timeout, context=ssl_context()) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def is_allowed_report_url(url: str) -> bool:
+    """HTTPS only, so a misconfigured endpoint cannot send logs in clear."""
+    parts = urllib.parse.urlsplit(url)
+    return parts.scheme == "https" and bool(parts.hostname)
 
 
 # ---------------------------------------------------------------------------
@@ -2493,6 +2556,7 @@ class App(tk.Tk):
             f"Version:   {APP_VERSION}",
             f"Platform:  {sys.platform}  (packaged app: {bool(getattr(sys, 'frozen', False))})",
             f"Language:  {self.lang}",
+            f"Machine:   {machine_name()}",
             f"SD card:   {self.source_path.get().strip() or '(none selected)'}",
             f"Hard disk: {self.dest_path.get().strip() or '(none selected)'}",
             "",
@@ -2502,15 +2566,56 @@ class App(tk.Tk):
         try:
             body = LOG_PATH.read_text(encoding="utf-8", errors="replace") \
                 if LOG_PATH.exists() else "(no log file yet)"
-            target.write_text("\n".join(header) + body, encoding="utf-8")
+            full = "\n".join(header) + body
+            target.write_text(full, encoding="utf-8")
         except OSError as e:
             log_exception("saving the report", e)
             messagebox.showerror(self.t("app_title"), self.t("report_failed", error=e))
             return
 
         log.info("problem report written to %s", target)
+
+        # The file on the Desktop is written first and kept whatever happens
+        # next, so a failed upload still leaves the user something to send.
+        if REPORT_ENDPOINT and messagebox.askyesno(self.t("app_title"), self.t("report_ask")):
+            self._send_report(full, target)
+            return
+
         open_in_file_manager(target.parent)
         messagebox.showinfo(self.t("app_title"), self.t("report_saved", path=target))
+
+    def _send_report(self, full_text: str, saved_copy: Path):
+        """Upload in the background so a slow network cannot freeze the UI."""
+        self.report_button.config(state="disabled")
+        payload = {
+            "version": APP_VERSION,
+            "platform": sys.platform,
+            "language": self.lang,
+            "machine": machine_name(),
+            "log": full_text,
+        }
+
+        def worker():
+            try:
+                result = upload_report(payload)
+            except Exception as e:
+                log_exception("sending the report", e)
+                self.after(0, lambda e=e: self._report_send_done(None, e, saved_copy))
+                return
+            log.info("problem report sent: %s", result)
+            self.after(0, lambda: self._report_send_done(result, None, saved_copy))
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    def _report_send_done(self, result, error, saved_copy: Path):
+        self.report_button.config(state="normal")
+        if error is not None:
+            open_in_file_manager(saved_copy.parent)
+            messagebox.showwarning(
+                self.t("app_title"),
+                self.t("report_send_failed", error=error, path=saved_copy))
+            return
+        messagebox.showinfo(self.t("app_title"), self.t("report_sent", path=saved_copy))
 
     def _open_help(self):
         """Show the guide for the language the interface is set to."""

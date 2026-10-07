@@ -109,7 +109,9 @@ first-run warnings above apply either way.
   card's contents (filenames + sizes) against a small registry file kept
   on the destination drive. If it looks like the same card was already
   backed up, it asks for confirmation instead of silently re-copying.
-- **Report a Problem** — copies `~/.sd_video_backup.log` to the Desktop as
+- **Report a Problem** — optionally uploads the report (see
+  [report-worker/](report-worker/)), and always copies
+  `~/.sd_video_backup.log` to the Desktop as
   `SD_Backup_Report_<date>.txt`, prefixed with the version, platform and
   selected drives, and opens the folder. The log records startup, each
   copy and its result, every failed or unverified file, update attempts
