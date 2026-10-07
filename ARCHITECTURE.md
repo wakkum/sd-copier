@@ -251,6 +251,12 @@ generator (`build_howto.py`) and the mockup screenshots
 (`make_screens.py`), and is gitignored for the same reason: it contains the
 guide's full text.
 
+The PDF covers English and Greek only. The in-app Help button
+(`HELP_TEXT` in `app.py`, one entry per language) is what a French, German
+or Italian user reads instead, and it is the only guide that ships with
+the build. **Two places to keep in step when behaviour changes**, and the
+in-app one matters more because it reaches every user.
+
 The mockups are HTML re-creations of the UI, not real screenshots, because
 capturing the Tk window needs Screen Recording permission that the build
 machine does not grant. **They must be kept in step with `app.py` by hand.**

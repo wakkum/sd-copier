@@ -2,6 +2,20 @@
 
 ## 1.5.2
 
+### Added
+- **A Help button, in all five languages.** The printed guide
+  (`HOW_TO_USE.pdf`) only exists in English and Greek, so a French, German
+  or Italian user had no instructions at all. The guide now lives inside
+  the app, follows the language dropdown, and ships with every build. It
+  sits in the utility row inside the scrolling form rather than the pinned
+  strip at the bottom, which stays 86px.
+- **A reminder when the event name or description is left empty.** Both
+  are optional as far as the copy is concerned, but an empty description
+  is the one thing that cannot be recovered later: the footage is still
+  there, but what it was is gone. Clicking Copy with either field blank
+  now asks whether to continue, naming which one was missed, and defaults
+  to No. Answering yes copies exactly as before.
+
 ### Fixed
 - **The pinned bottom strip took too much of a small screen.** Pinning the
   action area to the bottom kept the Copy button reachable, but it reserved

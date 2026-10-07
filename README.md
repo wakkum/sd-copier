@@ -109,6 +109,15 @@ first-run warnings above apply either way.
   card's contents (filenames + sizes) against a small registry file kept
   on the destination drive. If it looks like the same card was already
   backed up, it asks for confirmation instead of silently re-copying.
+- **Help / How to use** — opens the full guide inside the app, in whichever
+  of the five languages the interface is set to. The separate
+  `HOW_TO_USE.pdf` is English and Greek only, so this is the only
+  instructions a French, German or Italian user has; keep it in step with
+  the UI when behaviour changes.
+- **Empty-field reminder** — clicking Copy with the event name or the
+  description left blank asks whether to continue, naming which one was
+  missed. Both stay optional; the prompt defaults to No so a stray Enter
+  does not skip past it.
 - **Free space check** — refuses to start (with a clear error) if the
   destination drive doesn't have enough room for the files being copied.
 - **Eject SD Card & Hard Drive** — safely ejects both drives from within

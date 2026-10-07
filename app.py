@@ -140,6 +140,18 @@ STRINGS = {
         "update_install_failed": "The update could not be installed:\n{error}\n\n"
                                  "Nothing has been changed - the app still works as before.",
         "update_busy": "Please wait until the copy has finished before updating.",
+        "confirm_missing_both": "You haven't filled in an event name or a description.\n\n"
+                                "These are what make this backup easy to find and understand "
+                                "later. Copy anyway?",
+        "confirm_missing_name": "You haven't filled in an event name.\n\n"
+                                "Without one the folder will just be called \"Event\". "
+                                "Copy anyway?",
+        "confirm_missing_desc": "You haven't written a description.\n\n"
+                                "The description is what you'll read later to remember what "
+                                "these videos show. Copy anyway?",
+        "help_button": "Help / How to use",
+        "help_title": "How to use SD Video Backup",
+        "help_close": "Close",
         "update_check_button": "Check for Updates",
         "update_not_configured": "Update checking isn't set up yet.",
         "update_check_failed": "Could not check for updates (no internet connection?).",
@@ -206,6 +218,20 @@ STRINGS = {
         "update_install_failed": "Η ενημέρωση δεν εγκαταστάθηκε:\n{error}\n\n"
                                  "Δεν άλλαξε τίποτα - η εφαρμογή λειτουργεί όπως πριν.",
         "update_busy": "Περιμένετε να ολοκληρωθεί η αντιγραφή πριν την ενημέρωση.",
+        "confirm_missing_both": "Δεν έχετε συμπληρώσει ούτε όνομα συμβάντος ούτε περιγραφή.\n\n"
+                                "Αυτά είναι που κάνουν αυτό το αντίγραφο ασφαλείας εύκολο να "
+                                "το βρείτε και να το καταλάβετε αργότερα. Να γίνει ούτως ή "
+                                "άλλως αντιγραφή;",
+        "confirm_missing_name": "Δεν έχετε συμπληρώσει όνομα συμβάντος.\n\n"
+                                "Χωρίς αυτό ο φάκελος θα ονομαστεί απλώς \"Event\". "
+                                "Να γίνει ούτως ή άλλως αντιγραφή;",
+        "confirm_missing_desc": "Δεν έχετε γράψει περιγραφή.\n\n"
+                                "Η περιγραφή είναι αυτό που θα διαβάσετε αργότερα για να "
+                                "θυμηθείτε τι δείχνουν αυτά τα βίντεο. Να γίνει ούτως ή άλλως "
+                                "αντιγραφή;",
+        "help_button": "Βοήθεια / Οδηγίες χρήσης",
+        "help_title": "Οδηγίες χρήσης του SD Video Backup",
+        "help_close": "Κλείσιμο",
         "update_check_button": "Έλεγχος για Ενημερώσεις",
         "update_not_configured": "Ο έλεγχος ενημερώσεων δεν έχει ρυθμιστεί ακόμα.",
         "update_check_failed": "Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις (πρόβλημα σύνδεσης στο διαδίκτυο;).",
@@ -288,6 +314,18 @@ STRINGS = {
         "update_install_failed": "La mise à jour n'a pas pu être installée :\n{error}\n\n"
                                  "Rien n'a été modifié - l'application fonctionne comme avant.",
         "update_busy": "Veuillez attendre la fin de la copie avant de mettre à jour.",
+        "confirm_missing_both": "Vous n'avez saisi ni nom d'événement ni description.\n\n"
+                                "Ce sont eux qui rendront cette sauvegarde facile à retrouver "
+                                "et à comprendre plus tard. Copier quand même ?",
+        "confirm_missing_name": "Vous n'avez pas saisi de nom d'événement.\n\n"
+                                "Sans nom, le dossier s'appellera simplement « Event ». "
+                                "Copier quand même ?",
+        "confirm_missing_desc": "Vous n'avez pas écrit de description.\n\n"
+                                "C'est la description que vous relirez plus tard pour vous "
+                                "rappeler ce que montrent ces vidéos. Copier quand même ?",
+        "help_button": "Aide / Mode d'emploi",
+        "help_title": "Mode d'emploi de SD Video Backup",
+        "help_close": "Fermer",
         "update_check_button": "Vérifier les Mises à Jour",
         "update_not_configured": "La vérification des mises à jour n'est pas encore configurée.",
         "update_check_failed": "Impossible de vérifier les mises à jour (pas de connexion internet ?).",
@@ -372,6 +410,18 @@ STRINGS = {
                                  "Es wurde nichts verändert - die App funktioniert wie zuvor.",
         "update_busy": "Bitte warten Sie, bis das Kopieren abgeschlossen ist, bevor Sie "
                        "aktualisieren.",
+        "confirm_missing_both": "Sie haben weder einen Ereignisnamen noch eine Beschreibung "
+                                "eingegeben.\n\nGenau die machen diese Sicherung später "
+                                "leicht auffindbar und verständlich. Trotzdem kopieren?",
+        "confirm_missing_name": "Sie haben keinen Ereignisnamen eingegeben.\n\n"
+                                "Ohne Namen heißt der Ordner einfach „Event“. "
+                                "Trotzdem kopieren?",
+        "confirm_missing_desc": "Sie haben keine Beschreibung eingegeben.\n\n"
+                                "Die Beschreibung ist das, was Sie später lesen, um sich zu "
+                                "erinnern, was diese Videos zeigen. Trotzdem kopieren?",
+        "help_button": "Hilfe / Anleitung",
+        "help_title": "Anleitung für SD Video Backup",
+        "help_close": "Schließen",
         "update_check_button": "Nach Updates suchen",
         "update_not_configured": "Die Update-Prüfung ist noch nicht eingerichtet.",
         "update_check_failed": "Es konnte nicht nach Updates gesucht werden (keine Internetverbindung?).",
@@ -454,6 +504,18 @@ STRINGS = {
         "update_install_failed": "Non è stato possibile installare l'aggiornamento:\n{error}\n\n"
                                  "Non è stato modificato nulla - l'app funziona come prima.",
         "update_busy": "Attendi il termine della copia prima di aggiornare.",
+        "confirm_missing_both": "Non hai inserito né un nome dell'evento né una "
+                                "descrizione.\n\nSono questi a rendere il backup facile da "
+                                "ritrovare e da capire in futuro. Copiare lo stesso?",
+        "confirm_missing_name": "Non hai inserito un nome dell'evento.\n\n"
+                                "Senza nome la cartella si chiamerà semplicemente \"Event\". "
+                                "Copiare lo stesso?",
+        "confirm_missing_desc": "Non hai scritto una descrizione.\n\n"
+                                "La descrizione è ciò che leggerai in futuro per ricordare "
+                                "cosa mostrano questi video. Copiare lo stesso?",
+        "help_button": "Aiuto / Istruzioni",
+        "help_title": "Istruzioni per SD Video Backup",
+        "help_close": "Chiudi",
         "update_check_button": "Controlla Aggiornamenti",
         "update_not_configured": "Il controllo degli aggiornamenti non è ancora configurato.",
         "update_check_failed": "Impossibile controllare gli aggiornamenti (nessuna connessione "
@@ -462,6 +524,518 @@ STRINGS = {
         "update_available_msg": "È disponibile una nuova versione: {version} (hai {current}).\n\n"
                                  "Aprire la pagina di download?",
     },
+}
+
+
+# ---------------------------------------------------------------------------
+# In-app help. The printed guide (HOW_TO_USE.pdf) exists only in English and
+# Greek, so this is the only help a French, German or Italian user gets. It
+# lives in the app so it ships with every build and follows the language
+# dropdown. Keep it in step with the UI when behaviour changes.
+# ---------------------------------------------------------------------------
+
+HELP_TEXT = {
+    "en": """WHAT YOU NEED
+
+  - The SD card from the camera
+  - The external hard drive
+  - This laptop
+
+OPENING THE APP
+
+On Windows the app lives inside a folder called "SD Video Backup". Open
+that folder and double-click "SD Video Backup" inside it. Keep the folder
+together exactly as it is: the other files next to the app are part of it,
+and moving the app out on its own will stop it opening. If you want it on
+the Desktop, ask for a shortcut rather than dragging the app out.
+
+On Mac the app is in the Applications folder.
+
+The first time you open it the computer may warn that it does not
+recognise the app. That is expected. On Windows click "More info" and then
+"Run anyway"; on Mac right-click the app and choose "Open". Once only.
+
+STEP BY STEP
+
+  1. Plug in both the SD card and the external hard drive. Wait a few
+     seconds for them to be recognised.
+
+  2. Choose the SD card in the list under "Detected", or press "Browse..."
+     and pick it yourself. Each drive shows its size, which is the quickest
+     way to tell them apart: the card is the small one (usually tens of
+     GB), the hard drive is much bigger (often 1 TB or more). On Windows
+     the drive letter is shown too, for example E: or F:.
+
+  3. Choose the external hard drive the same way, in the section below it.
+     It is the larger of the two.
+
+  4. Fill in the details:
+       - Date of recording, as YYYY-MM-DD (e.g. 2026-09-14).
+       - Camera: "Button" or "Powerbank", whichever recorded the video.
+       - Event name: a short name for what happened, e.g. "Birthday
+         party". Optional; left blank the folder is called "Event".
+       - Description: a short note about what happens in the videos.
+       - Tick "Mark this day as VERY IMPORTANT" if it is a special day.
+
+     If you click Copy with the event name or description empty, the app
+     asks whether to continue. It is only a reminder and you can say yes,
+     but the description is the one thing that cannot be worked out again
+     from the videos later, so it is worth writing something.
+
+  5. Click the green "Copy videos now" button at the bottom. If the window
+     is too small to show the whole form, the green button stays at the
+     bottom and the form scrolls above it.
+
+  6. Wait while the files copy and are checked. Do NOT remove the SD card
+     or the hard drive while this is happening.
+
+  7. When it finishes you are told how many files were copied, and the
+     folder opens so you can look at it. You can then disconnect both.
+
+ADDING A SECOND CAMERA TO THE SAME EVENT
+
+After a copy, "Add Another Camera to This Event" becomes available. It
+keeps the same date, event name and description, switches to the other
+camera and clears the card field, so the second camera's footage lands in
+the same event folder instead of making a new one.
+
+KEEPING THE APP UP TO DATE
+
+Click "Check for Updates" at the bottom right. On Windows the app can
+download and install a newer version itself: it closes and reopens on the
+new version, and there is nothing else to do. On Mac it opens the download
+page instead. Do not update in the middle of a copy; the app will tell you
+to wait. If an update cannot be downloaded, nothing is changed and the
+version you have keeps working.
+
+GOOD TO KNOW
+
+  - Every description you write is also collected in one file called
+    "All_Descriptions.txt" at the top of the hard drive. "View Backup
+    History" shows the same thing inside the app.
+
+  - Never delete anything from the SD card yourself. Copy first, and only
+    clear the card once you are sure the backup worked.
+
+  - Nothing is ever overwritten. If a file with the same name is already
+    there, the new copy is saved alongside it, not on top of it.
+
+  - Your videos are read from the card, never changed or deleted.
+
+  - If some files report a problem, the SD card is untouched. Just try
+    "Copy videos now" again.
+
+  - The app remembers the hard drive you used last time.
+""",
+
+    "el": """ΤΙ ΧΡΕΙΑΖΕΣΤΕ
+
+  - Την κάρτα SD από την κάμερα
+  - Τον εξωτερικό σκληρό δίσκο
+  - Αυτό το laptop
+
+ΑΝΟΙΓΜΑ ΤΗΣ ΕΦΑΡΜΟΓΗΣ
+
+Στα Windows η εφαρμογή βρίσκεται μέσα σε έναν φάκελο με το όνομα "SD Video
+Backup". Ανοίξτε τον φάκελο και κάντε διπλό κλικ στο "SD Video Backup" που
+είναι μέσα. Κρατήστε τον φάκελο ακριβώς όπως είναι: τα υπόλοιπα αρχεία
+δίπλα στην εφαρμογή αποτελούν μέρος της, και αν βγάλετε την εφαρμογή μόνη
+της δεν θα ανοίγει. Αν τη θέλετε στην Επιφάνεια Εργασίας, ζητήστε μια
+συντόμευση αντί να σύρετε την εφαρμογή έξω.
+
+Σε Mac η εφαρμογή βρίσκεται στον φάκελο Applications.
+
+Την πρώτη φορά ο υπολογιστής μπορεί να προειδοποιήσει ότι δεν αναγνωρίζει
+την εφαρμογή. Είναι φυσιολογικό. Στα Windows πατήστε "More info" και μετά
+"Run anyway". Σε Mac κάντε δεξί κλικ και επιλέξτε "Open". Μόνο μία φορά.
+
+ΒΗΜΑ-ΒΗΜΑ
+
+  1. Συνδέστε και την κάρτα SD και τον εξωτερικό σκληρό δίσκο. Περιμένετε
+     λίγα δευτερόλεπτα μέχρι να αναγνωριστούν.
+
+  2. Επιλέξτε την κάρτα SD στη λίστα κάτω από το "Detected", ή πατήστε
+     "Browse..." και επιλέξτε την εσείς. Κάθε δίσκος δείχνει το μέγεθός
+     του, που είναι ο πιο γρήγορος τρόπος να τους ξεχωρίσετε: η κάρτα
+     είναι η μικρή (συνήθως μερικές δεκάδες GB), ο σκληρός δίσκος πολύ
+     μεγαλύτερος (συχνά 1 TB ή περισσότερο). Στα Windows εμφανίζεται και
+     το γράμμα του δίσκου, π.χ. E: ή F:.
+
+  3. Επιλέξτε τον εξωτερικό σκληρό δίσκο με τον ίδιο τρόπο, στην ενότητα
+     από κάτω. Είναι ο μεγαλύτερος από τους δύο.
+
+  4. Συμπληρώστε τα στοιχεία:
+       - Ημερομηνία εγγραφής, στη μορφή ΕΕΕΕ-ΜΜ-ΗΗ (π.χ. 2026-09-14).
+       - Κάμερα: "Button" ή "Powerbank", όποια κατέγραψε το βίντεο.
+       - Όνομα συμβάντος: ένα σύντομο όνομα για το τι έγινε, π.χ. "Πάρτι
+         γενεθλίων". Προαιρετικό. Αν μείνει κενό, ο φάκελος θα ονομαστεί
+         "Event".
+       - Περιγραφή: λίγα λόγια για το τι δείχνουν τα βίντεο.
+       - Επιλέξτε "Mark this day as VERY IMPORTANT" αν είναι ξεχωριστή
+         μέρα.
+
+     Αν πατήσετε Αντιγραφή με κενό το όνομα συμβάντος ή την περιγραφή, η
+     εφαρμογή θα ρωτήσει αν θέλετε να συνεχίσετε. Είναι απλώς υπενθύμιση
+     και μπορείτε να απαντήσετε ναι, όμως η περιγραφή είναι το μόνο που
+     δεν μπορεί να βρεθεί ξανά από τα ίδια τα βίντεο, οπότε αξίζει να
+     γράψετε κάτι.
+
+  5. Πατήστε το πράσινο κουμπί "Copy videos now" στο κάτω μέρος. Αν το
+     παράθυρο είναι μικρό, το πράσινο κουμπί παραμένει κάτω και η φόρμα
+     κυλάει από πάνω του.
+
+  6. Περιμένετε όσο αντιγράφονται και ελέγχονται τα αρχεία. ΜΗΝ αφαιρέσετε
+     την κάρτα SD ή τον σκληρό δίσκο όσο διαρκεί η διαδικασία.
+
+  7. Όταν ολοκληρωθεί, θα δείτε πόσα αρχεία αντιγράφηκαν και ο φάκελος θα
+     ανοίξει για να τον ελέγξετε. Μετά μπορείτε να τα αποσυνδέσετε.
+
+ΠΡΟΣΘΗΚΗ ΔΕΥΤΕΡΗΣ ΚΑΜΕΡΑΣ ΣΤΟ ΙΔΙΟ ΣΥΜΒΑΝ
+
+Μετά από μια αντιγραφή ενεργοποιείται το "Add Another Camera to This
+Event". Κρατά την ίδια ημερομηνία, όνομα και περιγραφή, αλλάζει στην άλλη
+κάμερα και καθαρίζει το πεδίο της κάρτας, ώστε το υλικό της δεύτερης
+κάμερας να μπει στον ίδιο φάκελο συμβάντος αντί να δημιουργηθεί νέος.
+
+ΔΙΑΤΗΡΩΝΤΑΣ ΤΗΝ ΕΦΑΡΜΟΓΗ ΕΝΗΜΕΡΩΜΕΝΗ
+
+Πατήστε "Check for Updates" κάτω δεξιά. Στα Windows η εφαρμογή μπορεί να
+κατεβάσει και να εγκαταστήσει μόνη της τη νεότερη έκδοση: κλείνει και
+ανοίγει ξανά με τη νέα έκδοση, χωρίς να χρειάζεται να κάνετε τίποτα. Σε
+Mac ανοίγει τη σελίδα λήψης. Μην κάνετε ενημέρωση στη μέση μιας
+αντιγραφής. Αν η ενημέρωση δεν κατέβει, δεν αλλάζει τίποτα και η έκδοση
+που έχετε συνεχίζει να λειτουργεί.
+
+ΚΑΛΟ ΕΙΝΑΙ ΝΑ ΞΕΡΕΤΕ
+
+  - Κάθε περιγραφή που γράφετε συγκεντρώνεται και σε ένα αρχείο με το
+    όνομα "All_Descriptions.txt" στην κορυφή του σκληρού δίσκου. Το "View
+    Backup History" δείχνει το ίδιο μέσα από την εφαρμογή.
+
+  - Μην διαγράφετε ποτέ τίποτα από την κάρτα SD μόνοι σας. Αντιγράψτε
+    πρώτα, και αδειάστε την κάρτα μόνο αφού βεβαιωθείτε ότι πέτυχε.
+
+  - Τίποτα δεν αντικαθίσταται ποτέ. Αν υπάρχει ήδη αρχείο με το ίδιο
+    όνομα, το νέο αποθηκεύεται δίπλα του, όχι πάνω του.
+
+  - Τα βίντεό σας διαβάζονται από την κάρτα, δεν αλλάζουν και δεν
+    διαγράφονται ποτέ.
+
+  - Αν κάποια αρχεία εμφανίσουν πρόβλημα, η κάρτα SD παραμένει ανέπαφη.
+    Απλώς δοκιμάστε ξανά το "Copy videos now".
+
+  - Η εφαρμογή θυμάται τον σκληρό δίσκο που χρησιμοποιήσατε την
+    τελευταία φορά.
+""",
+
+    "fr": """CE QU'IL VOUS FAUT
+
+  - La carte SD de la caméra
+  - Le disque dur externe
+  - Cet ordinateur portable
+
+OUVRIR L'APPLICATION
+
+Sous Windows, l'application se trouve dans un dossier nommé "SD Video
+Backup". Ouvrez ce dossier et double-cliquez sur "SD Video Backup" à
+l'intérieur. Gardez le dossier tel quel : les autres fichiers à côté de
+l'application en font partie, et si l'application en est sortie seule elle
+ne s'ouvrira plus. Si vous la voulez sur le Bureau, demandez un raccourci
+plutôt que de la faire glisser hors du dossier.
+
+Sur Mac, l'application se trouve dans le dossier Applications.
+
+La première fois, l'ordinateur peut avertir qu'il ne reconnaît pas
+l'application. C'est normal. Sous Windows, cliquez sur « Informations
+complémentaires » puis « Exécuter quand même » ; sur Mac, faites un clic
+droit sur l'application et choisissez « Ouvrir ». Une seule fois.
+
+ÉTAPE PAR ÉTAPE
+
+  1. Branchez la carte SD et le disque dur externe. Patientez quelques
+     secondes le temps qu'ils soient reconnus.
+
+  2. Choisissez la carte SD dans la liste sous « Detected », ou appuyez
+     sur « Browse... » pour la sélectionner vous-même. Chaque disque
+     affiche sa taille, le moyen le plus rapide de les distinguer : la
+     carte est la petite (quelques dizaines de Go en général), le disque
+     dur est bien plus grand (souvent 1 To ou plus). Sous Windows, la
+     lettre du lecteur est également affichée, par exemple E: ou F:.
+
+  3. Choisissez le disque dur externe de la même façon, dans la section
+     en dessous. C'est le plus grand des deux.
+
+  4. Remplissez les informations :
+       - Date de l'enregistrement, au format AAAA-MM-JJ (ex. 2026-09-14).
+       - Caméra : « Button » ou « Powerbank », celle qui a filmé.
+       - Nom de l'événement : un nom court de ce qui s'est passé, par
+         exemple « Anniversaire ». Facultatif ; laissé vide, le dossier
+         s'appellera « Event ».
+       - Description : quelques mots sur ce que montrent les vidéos.
+       - Cochez « Mark this day as VERY IMPORTANT » si la journée est
+         particulière.
+
+     Si vous cliquez sur Copier en laissant le nom de l'événement ou la
+     description vide, l'application demande si vous voulez continuer.
+     Ce n'est qu'un rappel et vous pouvez répondre oui, mais la
+     description est la seule chose qui ne pourra pas être retrouvée plus
+     tard à partir des vidéos : cela vaut la peine d'écrire quelque chose.
+
+  5. Cliquez sur le bouton vert « Copy videos now » en bas. Si la fenêtre
+     est trop petite pour afficher tout le formulaire, le bouton vert
+     reste en bas et le formulaire défile au-dessus.
+
+  6. Patientez pendant la copie et la vérification des fichiers. NE
+     RETIREZ PAS la carte SD ni le disque dur pendant ce temps.
+
+  7. À la fin, le nombre de fichiers copiés s'affiche et le dossier
+     s'ouvre pour que vous puissiez le voir. Vous pouvez alors tout
+     débrancher.
+
+AJOUTER UNE DEUXIÈME CAMÉRA AU MÊME ÉVÉNEMENT
+
+Après une copie, « Add Another Camera to This Event » devient disponible.
+La date, le nom de l'événement et la description sont conservés,
+l'application passe à l'autre caméra et vide le champ de la carte, afin
+que les images de la deuxième caméra arrivent dans le même dossier
+d'événement au lieu d'en créer un nouveau.
+
+GARDER L'APPLICATION À JOUR
+
+Cliquez sur « Check for Updates » en bas à droite. Sous Windows,
+l'application peut télécharger et installer elle-même une version plus
+récente : elle se ferme et se rouvre sur la nouvelle version, sans rien
+d'autre à faire. Sur Mac, elle ouvre la page de téléchargement. Ne faites
+pas de mise à jour au milieu d'une copie ; l'application vous demandera
+d'attendre. Si une mise à jour ne peut pas être téléchargée, rien n'est
+modifié et la version que vous avez continue de fonctionner.
+
+BON À SAVOIR
+
+  - Chaque description que vous écrivez est aussi rassemblée dans un
+    fichier « All_Descriptions.txt » à la racine du disque dur. « View
+    Backup History » montre la même chose depuis l'application.
+
+  - Ne supprimez jamais rien de la carte SD vous-même. Copiez d'abord, et
+    ne videz la carte qu'une fois certain que la sauvegarde a réussi.
+
+  - Rien n'est jamais écrasé. Si un fichier du même nom existe déjà, la
+    nouvelle copie est enregistrée à côté, pas par-dessus.
+
+  - Vos vidéos sont lues depuis la carte, jamais modifiées ni supprimées.
+
+  - Si des fichiers signalent un problème, la carte SD reste intacte.
+    Réessayez simplement « Copy videos now ».
+
+  - L'application se souvient du disque dur utilisé la dernière fois.
+""",
+
+    "de": """WAS SIE BRAUCHEN
+
+  - Die SD-Karte aus der Kamera
+  - Die externe Festplatte
+  - Diesen Laptop
+
+DIE APP ÖFFNEN
+
+Unter Windows liegt die App in einem Ordner namens "SD Video Backup".
+Öffnen Sie diesen Ordner und doppelklicken Sie auf "SD Video Backup"
+darin. Lassen Sie den Ordner genau so, wie er ist: die übrigen Dateien
+neben der App gehören dazu, und wenn die App allein herausgenommen wird,
+lässt sie sich nicht mehr öffnen. Wenn Sie sie auf dem Desktop haben
+möchten, lassen Sie eine Verknüpfung anlegen, statt die App aus dem Ordner
+zu ziehen.
+
+Auf dem Mac liegt die App im Ordner "Programme".
+
+Beim ersten Öffnen warnt der Computer möglicherweise, dass er die App
+nicht kennt. Das ist normal. Unter Windows klicken Sie auf „Weitere
+Informationen“ und dann „Trotzdem ausführen“; auf dem Mac klicken Sie mit
+der rechten Maustaste auf die App und wählen „Öffnen“. Nur einmal nötig.
+
+SCHRITT FÜR SCHRITT
+
+  1. Schließen Sie die SD-Karte und die externe Festplatte an. Warten Sie
+     ein paar Sekunden, bis beide erkannt werden.
+
+  2. Wählen Sie die SD-Karte in der Liste unter „Detected“, oder klicken
+     Sie auf „Browse...“ und wählen Sie sie selbst aus. Zu jedem Laufwerk
+     wird die Größe angezeigt, das ist der schnellste Weg, sie zu
+     unterscheiden: die Karte ist die kleine (meist einige zehn GB), die
+     Festplatte ist deutlich größer (oft 1 TB oder mehr). Unter Windows
+     wird außerdem der Laufwerksbuchstabe angezeigt, etwa E: oder F:.
+
+  3. Wählen Sie die externe Festplatte auf dieselbe Weise im Abschnitt
+     darunter. Sie ist die größere der beiden.
+
+  4. Füllen Sie die Angaben aus:
+       - Aufnahmedatum im Format JJJJ-MM-TT (z. B. 2026-09-14).
+       - Kamera: „Button“ oder „Powerbank“, je nachdem, welche gefilmt
+         hat.
+       - Ereignisname: ein kurzer Name für das Geschehen, z. B.
+         „Geburtstag“. Optional; bleibt er leer, heißt der Ordner
+         „Event“.
+       - Beschreibung: ein paar Worte dazu, was die Videos zeigen.
+       - Haken Sie „Mark this day as VERY IMPORTANT“ an, wenn es ein
+         besonderer Tag ist.
+
+     Wenn Sie auf Kopieren klicken und Ereignisname oder Beschreibung leer
+     sind, fragt die App, ob Sie wirklich fortfahren möchten. Das ist nur
+     eine Erinnerung und Sie können mit Ja antworten, aber die
+     Beschreibung ist das Einzige, was sich später nicht aus den Videos
+     selbst wiederherstellen lässt. Es lohnt sich, etwas zu schreiben.
+
+  5. Klicken Sie unten auf die grüne Schaltfläche „Copy videos now“. Ist
+     das Fenster zu klein für das ganze Formular, bleibt die grüne
+     Schaltfläche unten und das Formular scrollt darüber.
+
+  6. Warten Sie, während die Dateien kopiert und geprüft werden. Entfernen
+     Sie in dieser Zeit WEDER die SD-Karte NOCH die Festplatte.
+
+  7. Am Ende wird angezeigt, wie viele Dateien kopiert wurden, und der
+     Ordner öffnet sich zur Kontrolle. Danach können Sie beide Geräte
+     abziehen.
+
+EINE ZWEITE KAMERA ZUM SELBEN EREIGNIS HINZUFÜGEN
+
+Nach einem Kopiervorgang wird „Add Another Camera to This Event“
+verfügbar. Datum, Ereignisname und Beschreibung bleiben erhalten, die App
+wechselt zur anderen Kamera und leert das Feld für die Karte, damit das
+Material der zweiten Kamera im selben Ereignisordner landet, statt einen
+neuen anzulegen.
+
+DIE APP AKTUELL HALTEN
+
+Klicken Sie unten rechts auf „Check for Updates“. Unter Windows kann die
+App eine neuere Version selbst herunterladen und installieren: sie
+schließt sich und öffnet sich mit der neuen Version wieder, mehr ist nicht
+zu tun. Auf dem Mac wird stattdessen die Download-Seite geöffnet.
+Aktualisieren Sie nicht mitten in einem Kopiervorgang; die App bittet Sie
+dann zu warten. Lässt sich ein Update nicht laden, wird nichts verändert
+und Ihre bisherige Version funktioniert weiter.
+
+GUT ZU WISSEN
+
+  - Jede Beschreibung, die Sie schreiben, wird zusätzlich in einer Datei
+    namens „All_Descriptions.txt“ oben auf der Festplatte gesammelt. „View
+    Backup History“ zeigt dasselbe innerhalb der App.
+
+  - Löschen Sie nie selbst etwas von der SD-Karte. Kopieren Sie zuerst,
+    und leeren Sie die Karte erst, wenn die Sicherung sicher geklappt hat.
+
+  - Es wird nie etwas überschrieben. Gibt es bereits eine Datei mit
+    demselben Namen, wird die neue Kopie daneben gespeichert, nicht
+    darüber.
+
+  - Ihre Videos werden von der Karte gelesen, nie verändert oder
+    gelöscht.
+
+  - Melden einzelne Dateien ein Problem, bleibt die SD-Karte unberührt.
+    Versuchen Sie einfach erneut „Copy videos now“.
+
+  - Die App merkt sich die zuletzt verwendete Festplatte.
+""",
+
+    "it": """CHE COSA SERVE
+
+  - La scheda SD della videocamera
+  - Il disco rigido esterno
+  - Questo portatile
+
+APRIRE L'APP
+
+Su Windows l'app si trova dentro una cartella chiamata "SD Video Backup".
+Apri quella cartella e fai doppio clic su "SD Video Backup" al suo
+interno. Tieni la cartella esattamente com'è: gli altri file accanto
+all'app ne fanno parte, e se l'app viene spostata da sola non si aprirà
+più. Se la vuoi sul Desktop, fai creare un collegamento invece di
+trascinare l'app fuori dalla cartella.
+
+Su Mac l'app si trova nella cartella Applicazioni.
+
+La prima volta il computer potrebbe avvisare che non riconosce l'app. È
+normale. Su Windows fai clic su "Maggiori informazioni" e poi "Esegui
+comunque"; su Mac fai clic destro sull'app e scegli "Apri". Solo una
+volta.
+
+PASSO DOPO PASSO
+
+  1. Collega sia la scheda SD sia il disco rigido esterno. Aspetta qualche
+     secondo che vengano riconosciuti.
+
+  2. Scegli la scheda SD nell'elenco sotto "Detected", oppure premi
+     "Browse..." e selezionala tu. Ogni unità mostra la propria
+     dimensione, il modo più rapido per distinguerle: la scheda è quella
+     piccola (di solito qualche decina di GB), il disco rigido è molto più
+     grande (spesso 1 TB o più). Su Windows viene mostrata anche la
+     lettera dell'unità, per esempio E: o F:.
+
+  3. Scegli il disco rigido esterno allo stesso modo, nella sezione
+     sottostante. È il più grande dei due.
+
+  4. Compila i dati:
+       - Data della ripresa, nel formato AAAA-MM-GG (es. 2026-09-14).
+       - Videocamera: "Button" o "Powerbank", quella che ha ripreso.
+       - Nome dell'evento: un nome breve di quello che è successo, per
+         esempio "Festa di compleanno". Facoltativo; se lo lasci vuoto la
+         cartella si chiamerà "Event".
+       - Descrizione: due righe su cosa mostrano i video.
+       - Spunta "Mark this day as VERY IMPORTANT" se è un giorno
+         speciale.
+
+     Se premi Copia lasciando vuoto il nome dell'evento o la descrizione,
+     l'app chiede se vuoi continuare. È solo un promemoria e puoi
+     rispondere di sì, ma la descrizione è l'unica cosa che non si potrà
+     più ricavare dai video in futuro: vale la pena scrivere qualcosa.
+
+  5. Premi il pulsante verde "Copy videos now" in basso. Se la finestra è
+     troppo piccola per mostrare tutto il modulo, il pulsante verde resta
+     in basso e il modulo scorre sopra di esso.
+
+  6. Aspetta mentre i file vengono copiati e verificati. NON rimuovere la
+     scheda SD né il disco rigido durante questa fase.
+
+  7. Al termine vedrai quanti file sono stati copiati e la cartella si
+     aprirà per un controllo. Dopo puoi scollegare entrambi.
+
+AGGIUNGERE UNA SECONDA VIDEOCAMERA ALLO STESSO EVENTO
+
+Dopo una copia diventa disponibile "Add Another Camera to This Event".
+Mantiene la stessa data, lo stesso nome evento e la stessa descrizione,
+passa all'altra videocamera e svuota il campo della scheda, così le
+riprese della seconda videocamera finiscono nella stessa cartella
+dell'evento invece di crearne una nuova.
+
+TENERE L'APP AGGIORNATA
+
+Premi "Check for Updates" in basso a destra. Su Windows l'app può
+scaricare e installare da sola una versione più recente: si chiude e si
+riapre sulla nuova versione, senza che tu debba fare altro. Su Mac apre
+invece la pagina di download. Non aggiornare nel mezzo di una copia; l'app
+ti dirà di aspettare. Se un aggiornamento non può essere scaricato non
+viene modificato nulla e la versione che hai continua a funzionare.
+
+BUONO A SAPERSI
+
+  - Ogni descrizione che scrivi viene raccolta anche in un unico file
+    chiamato "All_Descriptions.txt" sulla radice del disco rigido. "View
+    Backup History" mostra la stessa cosa dentro l'app.
+
+  - Non cancellare mai nulla dalla scheda SD da solo. Copia prima, e
+    svuota la scheda solo quando sei sicuro che il backup è riuscito.
+
+  - Niente viene mai sovrascritto. Se esiste già un file con lo stesso
+    nome, la nuova copia viene salvata accanto, non sopra.
+
+  - I tuoi video vengono letti dalla scheda, mai modificati né
+    cancellati.
+
+  - Se alcuni file segnalano un problema, la scheda SD resta intatta.
+    Riprova semplicemente con "Copy videos now".
+
+  - L'app ricorda il disco rigido usato l'ultima volta.
+""",
+
 }
 
 
@@ -1056,6 +1630,10 @@ class App(tk.Tk):
         self.refresh_btn.pack(side="left")
         self.history_button = tk.Button(utility_row, command=self._open_history)
         self.history_button.pack(side="left", padx=(8, 0))
+        # Deliberately in the scrolling form rather than the pinned strip at
+        # the bottom, which is kept as short as it can be.
+        self.help_button = tk.Button(utility_row, command=self._open_help)
+        self.help_button.pack(side="left", padx=(8, 0))
 
         # Details
         self.details_frame = tk.LabelFrame(form)
@@ -1278,6 +1856,7 @@ class App(tk.Tk):
         self.description_label.config(text=self.t("description_label"))
         self.important_check.config(text=self.t("important_check"))
         self.same_event_button.config(text=self.t("same_event_button"))
+        self.help_button.config(text=self.t("help_button"))
         self.same_event_hint_label.config(
             text=self.t("same_event_hint") if self.last_event_info else self.t("same_event_hint_disabled")
         )
@@ -1348,6 +1927,23 @@ class App(tk.Tk):
         if not self._is_valid_date(date_str):
             messagebox.showerror(self.t("app_title"), self.t("err_date"))
             return
+
+        # Catch the common slip of hitting Copy before filling in what the
+        # footage actually is. Both fields are optional as far as the copy
+        # is concerned, so this asks rather than blocks - and it reads the
+        # raw entry, because event_name has already been sanitised to
+        # "Event" by this point and would never look empty.
+        missing_name = not self.event_name_var.get().strip()
+        missing_desc = not description
+        if missing_name or missing_desc:
+            if missing_name and missing_desc:
+                key = "confirm_missing_both"
+            elif missing_name:
+                key = "confirm_missing_name"
+            else:
+                key = "confirm_missing_desc"
+            if not messagebox.askyesno(self.t("app_title"), self.t(key), default="no"):
+                return
 
         # The pinned event number only belongs to the event it was pinned
         # from. If the user edited the date (or switched drives) afterwards,
@@ -1657,6 +2253,30 @@ class App(tk.Tk):
         self.status_label.config(text="")
 
     # -- History viewer (item 2) ----------------------------------------------
+
+    def _open_help(self):
+        """Show the guide for the language the interface is set to."""
+        win = tk.Toplevel(self)
+        win.title(self.t("help_title"))
+        win.geometry("700x600")
+        win.minsize(480, 360)
+
+        text_frame = tk.Frame(win)
+        text_frame.pack(fill="both", expand=True, padx=10, pady=(10, 6))
+        scrollbar = tk.Scrollbar(text_frame)
+        scrollbar.pack(side="right", fill="y")
+        # A fixed-pitch font keeps the hand-indented lists lined up.
+        text_widget = tk.Text(text_frame, wrap="word", yscrollcommand=scrollbar.set,
+                              font=("Courier New", 11), padx=8, pady=6)
+        text_widget.pack(side="left", fill="both", expand=True)
+        scrollbar.config(command=text_widget.yview)
+
+        text_widget.insert("1.0", HELP_TEXT.get(self.lang, HELP_TEXT["en"]))
+        text_widget.config(state="disabled")
+
+        tk.Button(win, text=self.t("help_close"), command=win.destroy).pack(pady=(0, 10))
+        win.transient(self)
+        text_widget.focus_set()
 
     def _open_history(self):
         dest_root = self.dest_path.get().strip()
