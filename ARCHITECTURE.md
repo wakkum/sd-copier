@@ -204,17 +204,21 @@ macOS, Linux and the unfrozen script fall back to opening the release page.
 Replacing a `.app` in place safely needs code signing, which needs the Apple
 Developer Program.
 
-> **Shipped but not yet proven in the field.** The swap script has never
-> executed on a real Windows machine. It cannot be exercised by updating
-> *to* the version that introduces it, because the installed copy must
-> already contain the swap code — so 1.5.0 and 1.5.1 were both released to
-> make the test possible: install 1.5.0, then let it find 1.5.1. 1.5.1
-> carries no functional change and exists only for that purpose.
+> **Proven working on Windows, October 2026.** A copy running 1.5.1
+> installed 1.5.2 through the updater: it downloaded, closed, reopened on
+> the new version, and the new feature was present. The swap script, the
+> detached hand-off and the relaunch all work on a real machine.
 >
-> When testing, read the version back from the app after it reopens rather
-> than assuming success. The designed failure modes both look like "the app
-> is still here": the swap is refused and the old version reopens
-> unchanged, or the move half-fails and the rollback restores it.
+> It could not be tested by updating *to* the version that introduced it,
+> because the installed copy must already contain the swap code, which is
+> why 1.5.0 and 1.5.1 were both released: 1.5.1 carries no functional
+> change and exists only to give 1.5.0 something to find.
+>
+> When testing a change here, read the version back from the app after it
+> reopens rather than assuming success. The designed failure modes both
+> look like "the app is still here": the swap is refused and the old
+> version reopens unchanged, or the move half-fails and the rollback
+> restores it.
 
 ## 8a. Logging and problem reports
 
@@ -317,9 +321,33 @@ An earlier copy of the generator was lost when a scratch directory was
 cleared; it was reconstructed from the PDF's own embedded text and images.
 That is why it now lives inside the project rather than in temporary space.
 
+## 10a. Current state (8 October 2026)
+
+- Latest **release** is 1.5.3. `main` is at **1.5.4**, committed and
+  pushed but not released, so the version display, the log file and
+  "Report a Problem" are not yet in anyone's hands.
+- `report-worker/` is written and tested but **not deployed**: no Worker,
+  no R2 bucket, no token, and `wakkum/sd-copier-reports` does not exist
+  yet. `REPORT_ENDPOINT` is blank, so the button writes only to the
+  Desktop. Deploying is the owner's job (see that folder's README).
+- Uploading footage to cloud storage was discussed and **rejected as part
+  of this app**. Proton Drive has no usable API: the SDK cannot
+  authenticate, is not sanctioned for third-party production use, and
+  Proton's crypto migration in late 2026 or early 2027 will break older
+  releases; rclone's backend is beta, reverse-engineered, and loads whole
+  files into memory, which is unworkable for video. The watched-folder
+  approach (drop files where a vendor's own desktop client syncs them)
+  works for any provider and needs no credentials, and remains the
+  fallback if this is revisited.
+- The decision instead was a **separate, private tool** that uploads from
+  the backup drive to the user's own NAS over Tailscale and SSH, kept out
+  of this public repo because it carries hostnames and paths. Not started:
+  it is blocked on two answers - whether it runs on the owner's Mac (CLI)
+  or the non-technical user's Windows laptop (a second GUI app), and which
+  path on `/volume1` it writes to.
+
 ## 11. Known gaps
 
-- The Windows self-update has not run end to end on Windows (§8).
 - The mockups in `howto/` are hand-maintained and drift from the UI
   unless regenerated after a layout change (§10). This has already
   happened once: they showed a window with no Help button for three days
