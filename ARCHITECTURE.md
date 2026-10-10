@@ -323,6 +323,12 @@ PyInstaller does not cross-compile, so each platform builds on itself:
 produces `dist\SD Video Backup\` — a **folder**, not a lone `.exe`; the
 executable will not run without the `_internal` folder beside it.
 
+To try a change on a real machine before releasing it, use
+[`.github/workflows/test-build.yml`](.github/workflows/test-build.yml)
+instead: run it by hand against a branch or commit, and the zip is kept as
+an artifact on that run. It has read-only permissions and never touches a
+release, so the self-updater cannot offer a test build to anyone.
+
 [`.github/workflows/build.yml`](.github/workflows/build.yml) builds both on
 GitHub's runners and attaches the zips to a release, triggered by a version
 tag or manually against an existing tag. The manual trigger takes a separate
