@@ -37,7 +37,7 @@ from datetime import date
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-APP_VERSION = "1.5.4"
+APP_VERSION = "1.6.0"
 
 # Public GitHub repo used by "Check for Updates" (reads the latest Release
 # via GitHub's public API - no auth token needed or embedded). Left blank,
@@ -141,6 +141,25 @@ STRINGS = {
                           "has finished first.",
         "eject_ok": "Ejected safely - you can now unplug it.",
         "eject_fail": "Could not eject - you may need to eject it manually.",
+        "format_button": "Format SD Card",
+        "format_need_card": "Choose the SD card first, in the SD card list at the top.",
+        "format_not_root": "Choose the SD card itself from the list of detected drives, not a folder on it.",
+        "format_too_big": "This drive is {size}, so it is not an SD card. Only cards up to 100 GB can be formatted here - the backup hard drive is protected.",
+        "format_is_dest": "This is the drive chosen as the backup hard drive. It cannot be formatted.",
+        "format_is_system": "This is the computer's own drive. It cannot be formatted.",
+        "format_unknown": "Could not check what kind of drive this is, so to be safe it will not be formatted.",
+        "format_unsupported": "Formatting is not available on this computer.",
+        "format_not_card": "This does not look like an SD card, so it will not be formatted.",
+        "format_confirm": "Format the SD card {label}?\n\nEverything on the card will be erased for good. This cannot be undone.\n\n{backup}",
+        "format_backed_up": "The videos on this card were backed up on {when}, into {folder}.",
+        "format_not_backed_up": "WARNING: the videos on this card have NOT been backed up to the chosen hard drive by this program. If you format it, they are gone for good.",
+        "format_no_dest": "No backup hard drive is chosen, so it cannot be checked whether these videos have been backed up.",
+        "format_empty": "There are no videos on this card.",
+        "format_confirm_again": "Are you completely sure? The videos on this card will be lost for good.",
+        "format_windows_hint": "\n\nWindows will then open its own Format window for the card. Click Start, then OK.",
+        "format_done": "The SD card has been formatted. It is empty and ready to go back in the camera.",
+        "format_cancelled": "Formatting was cancelled. Nothing was changed.",
+        "format_failed": "The SD card could not be formatted.\n\n{error}",
         "update_install_msg": "A newer version is available: {version} (you have {current}).\n\n"
                               "Download and install it now? The app will close and reopen by "
                               "itself when it's done.",
@@ -224,6 +243,25 @@ STRINGS = {
         "eject_confirm": "Αποσύνδεση και της κάρτας SD και του σκληρού δίσκου τώρα;\n\nΒεβαιωθείτε ότι κάθε αντιγραφή έχει ολοκληρωθεί.",
         "eject_ok": "Αποσυνδέθηκε με ασφάλεια - μπορείτε τώρα να το αφαιρέσετε.",
         "eject_fail": "Δεν ήταν δυνατή η αποσύνδεση - ίσως χρειαστεί να το αφαιρέσετε χειροκίνητα.",
+        "format_button": "Διαμόρφωση Κάρτας SD",
+        "format_need_card": "Επιλέξτε πρώτα την κάρτα SD, στη λίστα της κάρτας SD στην κορυφή.",
+        "format_not_root": "Επιλέξτε την ίδια την κάρτα SD από τη λίστα των δίσκων που εντοπίστηκαν, όχι έναν φάκελο μέσα της.",
+        "format_too_big": "Αυτός ο δίσκος είναι {size}, άρα δεν είναι κάρτα SD. Εδώ μπορούν να διαμορφωθούν μόνο κάρτες έως 100 GB - ο σκληρός δίσκος αντιγράφων προστατεύεται.",
+        "format_is_dest": "Αυτός είναι ο δίσκος που έχει επιλεγεί ως σκληρός δίσκος αντιγράφων. Δεν μπορεί να διαμορφωθεί.",
+        "format_is_system": "Αυτός είναι ο δίσκος του ίδιου του υπολογιστή. Δεν μπορεί να διαμορφωθεί.",
+        "format_unknown": "Δεν ήταν δυνατό να ελεγχθεί τι είδους δίσκος είναι αυτός, οπότε για ασφάλεια δεν θα διαμορφωθεί.",
+        "format_unsupported": "Η διαμόρφωση δεν είναι διαθέσιμη σε αυτόν τον υπολογιστή.",
+        "format_not_card": "Αυτό δεν μοιάζει με κάρτα SD, οπότε δεν θα διαμορφωθεί.",
+        "format_confirm": "Διαμόρφωση της κάρτας SD {label};\n\nΌλα όσα υπάρχουν στην κάρτα θα διαγραφούν οριστικά. Αυτό δεν αναιρείται.\n\n{backup}",
+        "format_backed_up": "Τα βίντεο αυτής της κάρτας αντιγράφηκαν στις {when}, στον φάκελο {folder}.",
+        "format_not_backed_up": "ΠΡΟΣΟΧΗ: τα βίντεο αυτής της κάρτας ΔΕΝ έχουν αντιγραφεί από αυτό το πρόγραμμα στον επιλεγμένο σκληρό δίσκο. Αν τη διαμορφώσετε, θα χαθούν για πάντα.",
+        "format_no_dest": "Δεν έχει επιλεγεί σκληρός δίσκος αντιγράφων, οπότε δεν μπορεί να ελεγχθεί αν αυτά τα βίντεο έχουν αντιγραφεί.",
+        "format_empty": "Δεν υπάρχουν βίντεο σε αυτήν την κάρτα.",
+        "format_confirm_again": "Είστε απολύτως σίγουροι; Τα βίντεο αυτής της κάρτας θα χαθούν για πάντα.",
+        "format_windows_hint": "\n\nΤα Windows θα ανοίξουν μετά το δικό τους παράθυρο Διαμόρφωσης για την κάρτα. Πατήστε Έναρξη και μετά OK.",
+        "format_done": "Η κάρτα SD διαμορφώθηκε. Είναι άδεια και έτοιμη να μπει ξανά στην κάμερα.",
+        "format_cancelled": "Η διαμόρφωση ακυρώθηκε. Δεν άλλαξε τίποτα.",
+        "format_failed": "Δεν ήταν δυνατή η διαμόρφωση της κάρτας SD.\n\n{error}",
         "update_install_msg": "Υπάρχει νεότερη έκδοση διαθέσιμη: {version} (έχετε {current}).\n\n"
                               "Να γίνει λήψη και εγκατάσταση τώρα; Η εφαρμογή θα κλείσει και θα "
                               "ανοίξει ξανά μόνη της.",
@@ -326,6 +364,25 @@ STRINGS = {
                           "toute copie est terminée.",
         "eject_ok": "Éjecté en toute sécurité - vous pouvez maintenant le débrancher.",
         "eject_fail": "Impossible d'éjecter - vous devrez peut-être l'éjecter manuellement.",
+        "format_button": "Formater la Carte SD",
+        "format_need_card": "Choisissez d'abord la carte SD, dans la liste de la carte SD en haut.",
+        "format_not_root": "Choisissez la carte SD elle-même dans la liste des lecteurs détectés, pas un dossier qu'elle contient.",
+        "format_too_big": "Ce lecteur fait {size}, ce n'est donc pas une carte SD. Seules les cartes jusqu'à 100 Go peuvent être formatées ici - le disque dur de sauvegarde est protégé.",
+        "format_is_dest": "C'est le lecteur choisi comme disque dur de sauvegarde. Il ne peut pas être formaté.",
+        "format_is_system": "C'est le disque de l'ordinateur lui-même. Il ne peut pas être formaté.",
+        "format_unknown": "Impossible de vérifier de quel type de lecteur il s'agit ; par sécurité, il ne sera pas formaté.",
+        "format_unsupported": "Le formatage n'est pas disponible sur cet ordinateur.",
+        "format_not_card": "Ceci ne ressemble pas à une carte SD ; il ne sera donc pas formaté.",
+        "format_confirm": "Formater la carte SD {label} ?\n\nTout ce qui se trouve sur la carte sera effacé définitivement. C'est irréversible.\n\n{backup}",
+        "format_backed_up": "Les vidéos de cette carte ont été sauvegardées le {when}, dans {folder}.",
+        "format_not_backed_up": "ATTENTION : les vidéos de cette carte n'ont PAS été sauvegardées sur le disque dur choisi par ce programme. Si vous la formatez, elles seront perdues pour toujours.",
+        "format_no_dest": "Aucun disque dur de sauvegarde n'est choisi : impossible de vérifier si ces vidéos ont été sauvegardées.",
+        "format_empty": "Il n'y a aucune vidéo sur cette carte.",
+        "format_confirm_again": "Êtes-vous vraiment sûr ? Les vidéos de cette carte seront perdues pour toujours.",
+        "format_windows_hint": "\n\nWindows ouvrira ensuite sa propre fenêtre de formatage pour la carte. Cliquez sur Démarrer, puis sur OK.",
+        "format_done": "La carte SD a été formatée. Elle est vide et prête à retourner dans la caméra.",
+        "format_cancelled": "Le formatage a été annulé. Rien n'a été modifié.",
+        "format_failed": "Impossible de formater la carte SD.\n\n{error}",
         "update_install_msg": "Une nouvelle version est disponible : {version} (vous avez "
                               "{current}).\n\nLa télécharger et l'installer maintenant ? "
                               "L'application se fermera et se rouvrira toute seule.",
@@ -427,6 +484,25 @@ STRINGS = {
                           "sicher, dass jede Kopie abgeschlossen ist.",
         "eject_ok": "Sicher ausgeworfen - Sie können es jetzt abziehen.",
         "eject_fail": "Auswerfen nicht möglich - Sie müssen es möglicherweise manuell auswerfen.",
+        "format_button": "SD-Karte formatieren",
+        "format_need_card": "Wählen Sie zuerst die SD-Karte aus, in der Liste der SD-Karte oben.",
+        "format_not_root": "Wählen Sie die SD-Karte selbst aus der Liste der erkannten Laufwerke, nicht einen Ordner darauf.",
+        "format_too_big": "Dieses Laufwerk hat {size} und ist daher keine SD-Karte. Hier können nur Karten bis 100 GB formatiert werden - die Backup-Festplatte ist geschützt.",
+        "format_is_dest": "Dies ist das Laufwerk, das als Backup-Festplatte ausgewählt ist. Es kann nicht formatiert werden.",
+        "format_is_system": "Dies ist das eigene Laufwerk des Computers. Es kann nicht formatiert werden.",
+        "format_unknown": "Es konnte nicht geprüft werden, um was für ein Laufwerk es sich handelt. Sicherheitshalber wird es nicht formatiert.",
+        "format_unsupported": "Formatieren ist auf diesem Computer nicht verfügbar.",
+        "format_not_card": "Das sieht nicht wie eine SD-Karte aus und wird daher nicht formatiert.",
+        "format_confirm": "Die SD-Karte {label} formatieren?\n\nAlles auf der Karte wird endgültig gelöscht. Das lässt sich nicht rückgängig machen.\n\n{backup}",
+        "format_backed_up": "Die Videos auf dieser Karte wurden am {when} gesichert, in {folder}.",
+        "format_not_backed_up": "ACHTUNG: Die Videos auf dieser Karte wurden von diesem Programm NICHT auf die ausgewählte Festplatte gesichert. Wenn Sie sie formatieren, sind sie für immer verloren.",
+        "format_no_dest": "Es ist keine Backup-Festplatte ausgewählt, daher kann nicht geprüft werden, ob diese Videos gesichert wurden.",
+        "format_empty": "Auf dieser Karte sind keine Videos.",
+        "format_confirm_again": "Sind Sie ganz sicher? Die Videos auf dieser Karte gehen für immer verloren.",
+        "format_windows_hint": "\n\nWindows öffnet danach sein eigenes Formatierungsfenster für die Karte. Klicken Sie auf Starten und dann auf OK.",
+        "format_done": "Die SD-Karte wurde formatiert. Sie ist leer und kann wieder in die Kamera.",
+        "format_cancelled": "Das Formatieren wurde abgebrochen. Es wurde nichts verändert.",
+        "format_failed": "Die SD-Karte konnte nicht formatiert werden.\n\n{error}",
         "update_install_msg": "Eine neuere Version ist verfügbar: {version} (Sie haben "
                               "{current}).\n\nJetzt herunterladen und installieren? Die App "
                               "schließt sich und öffnet sich danach von selbst wieder.",
@@ -528,6 +604,25 @@ STRINGS = {
                           "ogni copia sia terminata.",
         "eject_ok": "Espulso in sicurezza - ora puoi scollegarlo.",
         "eject_fail": "Impossibile espellere - potrebbe essere necessario espellerlo manualmente.",
+        "format_button": "Formatta Scheda SD",
+        "format_need_card": "Scegli prima la scheda SD, nell'elenco della scheda SD in alto.",
+        "format_not_root": "Scegli la scheda SD stessa dall'elenco delle unità rilevate, non una cartella al suo interno.",
+        "format_too_big": "Questa unità è di {size}, quindi non è una scheda SD. Qui si possono formattare solo schede fino a 100 GB - il disco rigido di backup è protetto.",
+        "format_is_dest": "Questa è l'unità scelta come disco rigido di backup. Non può essere formattata.",
+        "format_is_system": "Questa è l'unità del computer stesso. Non può essere formattata.",
+        "format_unknown": "Non è stato possibile verificare di che tipo di unità si tratti, quindi per sicurezza non verrà formattata.",
+        "format_unsupported": "La formattazione non è disponibile su questo computer.",
+        "format_not_card": "Questa non sembra una scheda SD, quindi non verrà formattata.",
+        "format_confirm": "Formattare la scheda SD {label}?\n\nTutto ciò che si trova sulla scheda verrà cancellato definitivamente. Non si può annullare.\n\n{backup}",
+        "format_backed_up": "I video di questa scheda sono stati copiati il {when}, nella cartella {folder}.",
+        "format_not_backed_up": "ATTENZIONE: i video di questa scheda NON sono stati copiati da questo programma sul disco rigido scelto. Se la formatti, andranno persi per sempre.",
+        "format_no_dest": "Nessun disco rigido di backup è selezionato, quindi non si può verificare se questi video sono stati copiati.",
+        "format_empty": "Su questa scheda non ci sono video.",
+        "format_confirm_again": "Sei assolutamente sicuro? I video di questa scheda andranno persi per sempre.",
+        "format_windows_hint": "\n\nWindows aprirà poi la sua finestra di formattazione per la scheda. Fai clic su Avvia, poi su OK.",
+        "format_done": "La scheda SD è stata formattata. È vuota e pronta per tornare nella videocamera.",
+        "format_cancelled": "La formattazione è stata annullata. Non è stato modificato nulla.",
+        "format_failed": "Impossibile formattare la scheda SD.\n\n{error}",
         "update_install_msg": "È disponibile una versione più recente: {version} (hai la "
                               "{current}).\n\nScaricarla e installarla adesso? L'app si "
                               "chiuderà e si riaprirà da sola.",
@@ -723,6 +818,16 @@ keeps the same date, event name and description, switches to the other
 camera and clears the card field, so the second camera's footage lands in
 the same event folder instead of making a new one.
 
+FORMATTING THE SD CARD
+
+Once the videos are safely copied, "Format SD Card" at the bottom wipes
+the card so it is empty for the camera again. It only works on the card
+chosen at the top, and only on cards up to 100 GB: the backup hard drive
+can never be formatted. Before anything is erased the app tells you
+whether the card's videos have been backed up, and asks you to confirm.
+On Windows, Windows then opens its own Format window: click Start, then
+click OK. Formatting cannot be undone.
+
 IF SOMETHING GOES WRONG
 
 Click "Report a Problem". The app saves a file on your Desktop called
@@ -831,6 +936,17 @@ Backup". Ανοίξτε τον φάκελο και κάντε διπλό κλι�
 Event". Κρατά την ίδια ημερομηνία, όνομα και περιγραφή, αλλάζει στην άλλη
 κάμερα και καθαρίζει το πεδίο της κάρτας, ώστε το υλικό της δεύτερης
 κάμερας να μπει στον ίδιο φάκελο συμβάντος αντί να δημιουργηθεί νέος.
+
+ΔΙΑΜΟΡΦΩΣΗ ΤΗΣ ΚΑΡΤΑΣ SD
+
+Όταν τα βίντεο έχουν αντιγραφεί με ασφάλεια, το "Διαμόρφωση Κάρτας SD"
+στο κάτω μέρος σβήνει την κάρτα ώστε να είναι ξανά άδεια για την κάμερα.
+Λειτουργεί μόνο στην κάρτα που έχει επιλεγεί στην κορυφή, και μόνο σε
+κάρτες έως 100 GB: ο σκληρός δίσκος αντιγράφων δεν μπορεί ποτέ να
+διαμορφωθεί. Πριν σβηστεί οτιδήποτε, η εφαρμογή σας λέει αν τα βίντεο
+της κάρτας έχουν αντιγραφεί και ζητά επιβεβαίωση. Στα Windows ανοίγει
+μετά το παράθυρο Διαμόρφωσης των Windows: πατήστε Έναρξη και μετά
+πατήστε OK. Η διαμόρφωση δεν αναιρείται.
 
 ΑΝ ΚΑΤΙ ΠΑΕΙ ΣΤΡΑΒΑ
 
@@ -945,6 +1061,18 @@ La date, le nom de l'événement et la description sont conservés,
 l'application passe à l'autre caméra et vide le champ de la carte, afin
 que les images de la deuxième caméra arrivent dans le même dossier
 d'événement au lieu d'en créer un nouveau.
+
+FORMATER LA CARTE SD
+
+Une fois les vidéos copiées en toute sécurité, « Formater la Carte SD »
+en bas efface la carte pour qu'elle soit de nouveau vide pour la caméra.
+Cela ne fonctionne que sur la carte choisie en haut, et seulement pour
+les cartes jusqu'à 100 Go : le disque dur de sauvegarde ne peut jamais
+être formaté. Avant d'effacer quoi que ce soit, l'application vous
+indique si les vidéos de la carte ont été sauvegardées et vous demande
+de confirmer. Sous Windows, Windows ouvre ensuite sa propre fenêtre de
+formatage : cliquez sur Démarrer, puis sur OK. Le formatage est
+irréversible.
 
 EN CAS DE PROBLÈME
 
@@ -1062,6 +1190,17 @@ wechselt zur anderen Kamera und leert das Feld für die Karte, damit das
 Material der zweiten Kamera im selben Ereignisordner landet, statt einen
 neuen anzulegen.
 
+DIE SD-KARTE FORMATIEREN
+
+Wenn die Videos sicher kopiert sind, löscht "SD-Karte formatieren" unten
+die Karte, damit sie wieder leer für die Kamera ist. Das funktioniert nur
+mit der oben ausgewählten Karte und nur bei Karten bis 100 GB: Die
+Backup-Festplatte kann nie formatiert werden. Bevor etwas gelöscht wird,
+sagt Ihnen die App, ob die Videos der Karte gesichert wurden, und bittet
+um Bestätigung. Unter Windows öffnet Windows dann sein eigenes
+Formatierungsfenster: Klicken Sie auf Starten und dann auf OK. Das
+Formatieren lässt sich nicht rückgängig machen.
+
 WENN ETWAS SCHIEFGEHT
 
 Klicken Sie auf „Report a Problem“. Die App speichert auf Ihrem Desktop
@@ -1175,6 +1314,17 @@ Mantiene la stessa data, lo stesso nome evento e la stessa descrizione,
 passa all'altra videocamera e svuota il campo della scheda, così le
 riprese della seconda videocamera finiscono nella stessa cartella
 dell'evento invece di crearne una nuova.
+
+FORMATTARE LA SCHEDA SD
+
+Quando i video sono stati copiati in sicurezza, "Formatta Scheda SD" in
+basso cancella la scheda, così è di nuovo vuota per la videocamera.
+Funziona solo sulla scheda scelta in alto, e solo per schede fino a un
+massimo di 100 GB: il disco rigido di backup non può mai essere
+formattato. Prima di cancellare qualsiasi cosa, l'app ti dice se i video
+della scheda sono stati copiati e ti chiede di confermare. Su Windows si
+apre poi la finestra di formattazione di Windows: fai clic su Avvia, poi
+su OK. La formattazione non si può annullare.
 
 SE QUALCOSA VA STORTO
 
@@ -1502,6 +1652,245 @@ def eject_drive(path: str) -> bool:
             return r.returncode == 0
     except (OSError, subprocess.TimeoutExpired):
         return False
+
+
+# ---------------------------------------------------------------------------
+# Formatting the SD card
+# ---------------------------------------------------------------------------
+
+# Anything bigger than this is not one of the cameras' SD cards (16, 32 or
+# 64 GB) and is never formatted - above all, not the backup hard drive. It
+# is checked against the whole physical disk as well as the volume, so a
+# small partition on a big drive cannot slip under it. Decimal GB, the way
+# cards and drives are sold.
+MAX_FORMAT_BYTES = 100 * 1000 ** 3
+
+# Cards up to 32 GiB are SDHC and come formatted FAT32; bigger ones are SDXC
+# and exFAT. Cameras expect the format their card size came with. Only used
+# on the Mac - on Windows, the system Format dialog makes the same choice.
+FAT32_MAX_BYTES = 32 * 1024 ** 3
+
+
+class NotFormattable(Exception):
+    """Why a drive must not be formatted. `key` names the STRINGS message."""
+
+    def __init__(self, key: str, **kwargs):
+        super().__init__(key)
+        self.key = key
+        self.kwargs = kwargs
+
+
+def same_volume(a: str, b: str) -> bool:
+    """True when two paths live on the same volume. st_dev is the volume
+    serial on Windows and the device on the Mac, so this holds for a drive
+    letter and a folder on it alike."""
+    try:
+        return os.stat(a).st_dev == os.stat(b).st_dev
+    except OSError:
+        return False
+
+
+def _windows_ioctl(path: str, code: int, size: int = 1024) -> bytes:
+    """DeviceIoControl on a volume or disk opened with no access rights,
+    which is all the two queries below need - and so no admin either."""
+    import ctypes
+    from ctypes import wintypes
+
+    k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    k32.CreateFileW.restype = wintypes.HANDLE
+    k32.CreateFileW.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD,
+                                wintypes.LPVOID, wintypes.DWORD, wintypes.DWORD,
+                                wintypes.HANDLE]
+    k32.DeviceIoControl.restype = wintypes.BOOL
+    k32.DeviceIoControl.argtypes = [wintypes.HANDLE, wintypes.DWORD, wintypes.LPVOID,
+                                    wintypes.DWORD, wintypes.LPVOID, wintypes.DWORD,
+                                    ctypes.POINTER(wintypes.DWORD), wintypes.LPVOID]
+    k32.CloseHandle.argtypes = [wintypes.HANDLE]
+
+    file_share_read_write, open_existing = 0x1 | 0x2, 3
+    handle = k32.CreateFileW(path, 0, file_share_read_write, None, open_existing, 0, None)
+    if not handle or handle == wintypes.HANDLE(-1).value:
+        raise OSError(ctypes.get_last_error(), f"cannot open {path}")
+    try:
+        buffer = ctypes.create_string_buffer(size)
+        returned = wintypes.DWORD()
+        if not k32.DeviceIoControl(handle, code, None, 0, buffer, size,
+                                   ctypes.byref(returned), None):
+            raise OSError(ctypes.get_last_error(), f"ioctl {code:#x} failed on {path}")
+        return buffer.raw[:returned.value]
+    finally:
+        k32.CloseHandle(handle)
+
+
+def windows_disk_of(letter: str) -> tuple[int, int, int]:
+    """(disk number, volume bytes, whole-disk bytes) for a drive letter."""
+    ioctl_volume_get_volume_disk_extents = 0x00560000
+    ioctl_disk_get_drive_geometry_ex = 0x000700A0
+    # VOLUME_DISK_EXTENTS: a DWORD count, then 8-byte-aligned DISK_EXTENTs of
+    # {DWORD DiskNumber, LARGE_INTEGER StartingOffset, LARGE_INTEGER Length}.
+    extents = _windows_ioctl(f"\\\\.\\{letter}:", ioctl_volume_get_volume_disk_extents)
+    # A short answer would read as a smaller size than the drive has, which
+    # is the one direction this must never err in.
+    if len(extents) < 32:
+        raise OSError(f"short disk-extents answer ({len(extents)} bytes)")
+    if int.from_bytes(extents[0:4], "little") != 1:
+        raise OSError("volume spans more than one disk")
+    disk_number = int.from_bytes(extents[8:12], "little")
+    volume_bytes = int.from_bytes(extents[24:32], "little")
+    # DISK_GEOMETRY_EX: a 24-byte DISK_GEOMETRY, then LARGE_INTEGER DiskSize.
+    geometry = _windows_ioctl(f"\\\\.\\PhysicalDrive{disk_number}",
+                              ioctl_disk_get_drive_geometry_ex)
+    if len(geometry) < 32:
+        raise OSError(f"short geometry answer ({len(geometry)} bytes)")
+    disk_bytes = int.from_bytes(geometry[24:32], "little")
+    return disk_number, volume_bytes, disk_bytes
+
+
+def _diskutil_info(target: str) -> dict:
+    import plistlib
+
+    result = subprocess.run(["diskutil", "info", "-plist", target],
+                            capture_output=True, timeout=20, check=True)
+    return plistlib.loads(result.stdout)
+
+
+def mac_disk_of(mount: str) -> tuple[str, int, int]:
+    """(whole disk, volume bytes, whole-disk bytes) for a mounted volume."""
+    info = _diskutil_info(mount)
+    # A mounted .dmg is small, ejectable and not the system disk - exactly
+    # what a card looks like by size alone - so it is refused by kind.
+    if (info.get("BusProtocol") == "Disk Image"
+            or info.get("VirtualOrPhysical") == "Virtual"
+            or info.get("WritableMedia") is False):
+        raise NotFormattable("format_not_card")
+    volume_bytes = int(info.get("TotalSize") or info.get("Size") or 0)
+    whole = info["ParentWholeDisk"]
+    whole_info = _diskutil_info(whole)
+    # An APFS volume's parent is a synthesised container; the size that
+    # matters is the physical disk underneath it.
+    stores = whole_info.get("APFSPhysicalStores") or []
+    if stores:
+        store = stores[0].get("APFSPhysicalStore", "")
+        whole = _diskutil_info(store)["ParentWholeDisk"]
+        whole_info = _diskutil_info(whole)
+    disk_bytes = int(whole_info.get("TotalSize") or whole_info.get("Size") or 0)
+    return whole, volume_bytes, disk_bytes
+
+
+def check_formattable(card: str, dest: str) -> dict:
+    """Everything that has to be true before a drive may be formatted.
+
+    Raises NotFormattable with the reason otherwise. Fails closed: a drive
+    whose size cannot be read is refused, not waved through.
+    """
+    if not card:
+        raise NotFormattable("format_need_card")
+    if not (sys.platform.startswith("win") or sys.platform == "darwin"):
+        raise NotFormattable("format_unsupported")
+
+    # The card itself, not a folder on it: formatting acts on the whole
+    # volume, and a folder path makes it too easy to point at the wrong one.
+    if sys.platform.startswith("win"):
+        if not re.fullmatch(r"[A-Za-z]:\\?", card):
+            raise NotFormattable("format_not_root")
+        letter = card[0].upper()
+    else:
+        if not os.path.ismount(card):
+            raise NotFormattable("format_not_root")
+
+    if dest and same_volume(card, dest):
+        raise NotFormattable("format_is_dest")
+    system_root = (os.environ.get("SystemDrive", "C:") + "\\"
+                   if sys.platform.startswith("win") else "/")
+    if same_volume(card, system_root) or os.path.realpath(card) == os.path.realpath(system_root):
+        raise NotFormattable("format_is_system")
+    if same_volume(card, sys.executable):
+        raise NotFormattable("format_is_system")
+
+    if sys.platform.startswith("win"):
+        # Cards show as removable, or as fixed behind some USB readers. Not
+        # a CD/DVD, network share or RAM disk.
+        import ctypes
+        drive_removable, drive_fixed = 2, 3
+        if ctypes.windll.kernel32.GetDriveTypeW(f"{letter}:\\") not in (drive_removable,
+                                                                       drive_fixed):
+            raise NotFormattable("format_not_card")
+
+    try:
+        if sys.platform.startswith("win"):
+            disk, volume_bytes, disk_bytes = windows_disk_of(letter)
+        else:
+            disk, volume_bytes, disk_bytes = mac_disk_of(card)
+        usage_bytes = shutil.disk_usage(card).total
+    except NotFormattable:
+        raise
+    except Exception as exc:
+        log_exception(f"reading the size of {card}", exc)
+        raise NotFormattable("format_unknown") from exc
+
+    biggest = max(volume_bytes, disk_bytes, usage_bytes)
+    if not volume_bytes or not disk_bytes:
+        raise NotFormattable("format_unknown")
+    if biggest > MAX_FORMAT_BYTES:
+        raise NotFormattable("format_too_big", size=format_bytes(biggest))
+
+    # Belt and braces: never the disk the system itself is on, even if that
+    # disk happened to be small.
+    if sys.platform.startswith("win"):
+        try:
+            if windows_disk_of(system_root[0])[0] == disk:
+                raise NotFormattable("format_is_system")
+        except OSError:
+            pass
+
+    try:
+        device = os.stat(card).st_dev
+    except OSError as exc:  # pulled out mid-check
+        raise NotFormattable("format_unknown") from exc
+    return {"disk": disk, "volume_bytes": volume_bytes, "disk_bytes": disk_bytes,
+            "device": device}
+
+
+def fat_volume_name(name: str) -> str:
+    """A name FAT32 and exFAT both accept: up to 11 of A-Z, 0-9 and _."""
+    cleaned = re.sub(r"[^A-Z0-9_]", "", name.upper())[:11]
+    return cleaned or "SDCARD"
+
+
+def format_card_mac(mount: str, size: int) -> tuple[bool, str]:
+    file_system = "MS-DOS FAT32" if size <= FAT32_MAX_BYTES else "ExFAT"
+    name = fat_volume_name(Path(mount).name)
+    try:
+        r = subprocess.run(["diskutil", "eraseVolume", file_system, name, mount],
+                           capture_output=True, text=True, timeout=600)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return False, str(exc)
+    output = (r.stdout + r.stderr).strip()
+    return r.returncode == 0, output
+
+
+def format_card_windows(letter: str, hwnd: int) -> str:
+    """Open Windows's own Format dialog for that one drive.
+
+    SHFormatDrive is the dialog Explorer uses: it formats removable media
+    without admin rights, picks FAT32 or exFAT by size the way the camera
+    expects, and has no way to select a different drive. Returns "done",
+    "cancelled" or "failed".
+    """
+    import ctypes
+    from ctypes import wintypes
+
+    shfmt_id_default, quick = 0xFFFF, 0
+    shfmt_error, shfmt_cancel, shfmt_noformat = 0xFFFFFFFF, 0xFFFFFFFE, 0xFFFFFFFD
+    shformatdrive = ctypes.windll.shell32.SHFormatDrive
+    shformatdrive.restype = ctypes.c_uint32
+    shformatdrive.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.UINT, wintypes.UINT]
+    result = shformatdrive(hwnd, ord(letter.upper()) - ord("A"), shfmt_id_default, quick)
+    if result == shfmt_cancel:
+        return "cancelled"
+    if result in (shfmt_error, shfmt_noformat):
+        return "failed"
+    return "done"
 
 
 # ---------------------------------------------------------------------------
@@ -1886,6 +2275,9 @@ class App(tk.Tk):
         bottom_row.pack(side="bottom", fill="x", padx=12, pady=(0, 10))
         self.eject_button = tk.Button(bottom_row, command=self._eject_drives)
         self.eject_button.pack(side="left")
+        # Dark red, so it never reads as just another harmless utility.
+        self.format_button = tk.Button(bottom_row, fg="#b71c1c", command=self._format_card)
+        self.format_button.pack(side="left", padx=(8, 0))
         self.update_button = tk.Button(bottom_row, command=self._check_for_updates)
         self.update_button.pack(side="right")
 
@@ -2061,6 +2453,7 @@ class App(tk.Tk):
         )
         self.copy_button.config(text=self.t("copy_button"))
         self.eject_button.config(text=self.t("eject_button"))
+        self.format_button.config(text=self.t("format_button"))
         self.update_button.config(text=self.t("update_check_button"))
 
     # -- Drive suggestions ---------------------------------------------------
@@ -2377,6 +2770,7 @@ class App(tk.Tk):
         state = "disabled" if busy else "normal"
         self.copy_button.config(state=state)
         self.eject_button.config(state=state)
+        self.format_button.config(state=state)
         if busy:
             self.same_event_button.config(state="disabled")
         elif self.last_event_info:
@@ -2727,6 +3121,90 @@ class App(tk.Tk):
                     self.dest_path.set("")
 
         messagebox.showinfo(self.t("app_title"), "\n\n".join(lines))
+        self._refresh_drive_suggestions()
+
+    # -- Format the SD card ----------------------------------------------------
+
+    def _format_card(self):
+        """Erase the chosen SD card, after every check in check_formattable
+        and a confirmation that says whether its videos were backed up."""
+        if str(self.format_button.cget("state")) == "disabled":
+            return
+        card = self.source_path.get().strip()
+        dest = self.dest_path.get().strip()
+        title = self.t("app_title")
+        try:
+            info = check_formattable(card, dest)
+        except NotFormattable as refusal:
+            log.info("format refused for %r: %s", card, refusal.key)
+            messagebox.showwarning(title, self.t(refusal.key, **refusal.kwargs))
+            return
+
+        # Not a gate - the card may have been backed up some other way - but
+        # the confirmation says plainly when this program has no record of it.
+        try:
+            files = find_video_files(Path(card))
+        except OSError:
+            files = []
+        if not files:
+            backed_up, backup_line = True, self.t("format_empty")
+        elif not dest:
+            backed_up, backup_line = False, self.t("format_no_dest")
+        else:
+            prior = load_registry(Path(dest)).get(fingerprint_source(files, Path(card)))
+            if prior:
+                backed_up = True
+                backup_line = self.t("format_backed_up", when=prior.get("when", "?"),
+                                     folder=prior.get("folder", "?"))
+            else:
+                backed_up, backup_line = False, self.t("format_not_backed_up")
+
+        message = self.t("format_confirm", label=drive_label(card), backup=backup_line)
+        if sys.platform.startswith("win"):
+            message += self.t("format_windows_hint")
+        if not messagebox.askyesno(title, message, icon="warning", default="no"):
+            return
+        if not backed_up and not messagebox.askyesno(
+                title, self.t("format_confirm_again"), icon="warning", default="no"):
+            return
+
+        # The card could have been swapped while the dialogs were open.
+        try:
+            if check_formattable(card, dest) != info:
+                raise NotFormattable("format_unknown")
+        except NotFormattable as refusal:
+            log.info("format refused on re-check for %r: %s", card, refusal.key)
+            messagebox.showwarning(title, self.t(refusal.key, **refusal.kwargs))
+            return
+
+        log.info("formatting %s: disk %s, volume %s bytes, disk %s bytes, backed_up=%s",
+                 card, info["disk"], info["volume_bytes"], info["disk_bytes"], backed_up)
+        if sys.platform.startswith("win"):
+            outcome = format_card_windows(card[0], int(self.wm_frame(), 16))
+            self._format_finished(outcome, "")
+            return
+
+        self._set_busy(True)
+        self.config(cursor="watch")
+
+        def work():
+            ok, output = format_card_mac(card, info["disk_bytes"])
+            self.after(0, lambda: self._format_finished("done" if ok else "failed", output))
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _format_finished(self, outcome: str, detail: str):
+        self.config(cursor="")
+        self._set_busy(False)
+        log.info("format %s %s", outcome, detail)
+        title = self.t("app_title")
+        if outcome == "done":
+            self.source_path.set("")
+            messagebox.showinfo(title, self.t("format_done"))
+        elif outcome == "cancelled":
+            messagebox.showinfo(title, self.t("format_cancelled"))
+        else:
+            messagebox.showerror(title, self.t("format_failed", error=detail or "-"))
         self._refresh_drive_suggestions()
 
     # -- Update check (item 8) -------------------------------------------------

@@ -29,7 +29,9 @@ which subfolder the camera stored them in) into:
 
 matching the existing folder convention. Every copied file is verified
 byte-for-byte against the original on the SD card before it's counted as
-successful. Original files on the SD card are never deleted or modified.
+successful. Copying never deletes or modifies the original files on the SD
+card; the only thing that erases a card is the separate **Format SD Card**
+button, and only after confirmation (see below).
 
 For each event, it writes:
 
@@ -129,6 +131,17 @@ first-run warnings above apply either way.
   destination drive doesn't have enough room for the files being copied.
 - **Eject SD Card & Hard Drive** — safely ejects both drives from within
   the app once you're done.
+- **Format SD Card** — wipes the chosen card so it is empty for the camera
+  again. It will only ever touch a card: the drive must be 100 GB or
+  smaller, measured on the whole physical disk as well as the volume (so a
+  small partition on a big drive does not qualify), and it must not be the
+  selected backup drive, the system disk, a disk image, a network or CD
+  drive. Anything it cannot measure is refused. The confirmation says
+  whether this card's videos are in the backup drive's records, and asks a
+  second time if they are not. On Windows it opens the system's own Format
+  dialog for that one drive (no admin rights needed, FAT32 or exFAT chosen
+  by size); on the Mac it runs `diskutil eraseVolume` (FAT32 up to 32 GB,
+  exFAT above).
 - **Check for Updates** — looks at this repo's
   [latest release](https://github.com/wakkum/sd-copier/releases/latest).
   On Windows the app installs the update itself: it downloads the release

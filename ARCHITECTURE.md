@@ -157,6 +157,41 @@ to `F:  BACKUP HDD  (3.6 TB)`. The size is the point — it is the fastest way
 for a non-technical user to tell a card from a backup drive. Drives are
 listed one per row because these labels overflow a horizontal strip.
 
+### Formatting the card
+
+`check_formattable()` is the single gate, and it fails closed: every
+refusal raises `NotFormattable` with the message to show, and a drive whose
+size cannot be read is refused rather than allowed. In order:
+
+- The path must be a volume root (`E:\` / a mount point), not a folder.
+- Not the selected destination, not the system volume, not the volume the
+  app itself runs from (compared by `st_dev`, which is the volume serial on
+  Windows).
+- Windows: drive type removable or fixed only. Mac: not a disk image,
+  virtual or read-only volume - a mounted `.dmg` is small and ejectable,
+  exactly what a card looks like by size alone.
+- Size: the largest of the volume size, the **whole physical disk** size
+  and `shutil.disk_usage` must be at most `MAX_FORMAT_BYTES` (100 GB). The
+  disk size is what keeps a small partition on the backup drive out. On
+  Windows it comes from `IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS` then
+  `IOCTL_DISK_GET_DRIVE_GEOMETRY_EX`, both `FILE_ANY_ACCESS`, so no admin;
+  on the Mac from `diskutil info` on the volume's parent whole disk.
+- Windows: never the same physical disk as the system drive.
+
+The gate runs again right before formatting and must return the same
+result, in case the card was swapped while the dialogs were open.
+
+The backup check is advisory, not a gate: the card may have been backed up
+some other way. It uses the duplicate-card fingerprint registry on the
+selected destination, and the wording - and a second confirmation - make
+plain when there is no record of a backup.
+
+Windows formats through `SHFormatDrive`, the dialog Explorer uses. It
+needs no elevation for removable media, offers only that one drive, and
+picks FAT32 or exFAT by capacity the way cameras expect. The Mac runs
+`diskutil eraseVolume` with the same rule (FAT32 to 32 GiB, exFAT above).
+Neither path has been run against a real card yet - see Known gaps.
+
 ## 8. Update mechanism
 
 `check_for_update()` reads `releases/latest` from the GitHub API
@@ -347,6 +382,13 @@ That is why it now lives inside the project rather than in temporary space.
   path on `/volume1` it writes to.
 
 ## 11. Known gaps
+
+- **Format SD Card is untested on real hardware** (1.6.0). The rules were
+  exercised against simulated drives on both platforms, and the dialogs and
+  flows in the real window, but no card has actually been formatted by it
+  yet, and the Windows IOCTL offsets and `SHFormatDrive` call have not run on
+  Windows. Try it on a spare card, with the backup drive plugged in, before
+  relying on it.
 
 - The mockups in `howto/` are hand-maintained and drift from the UI
   unless regenerated after a layout change (§10). This has already

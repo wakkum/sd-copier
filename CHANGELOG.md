@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.6.0
+
+### Added
+- **Format SD Card.** A button at the bottom wipes the chosen card so it
+  is empty for the camera again, without leaving the app. It only ever
+  formats an SD card: anything over 100 GB is refused, measured on the
+  whole physical disk as well as the volume, so the backup hard drive - or
+  a small partition on it - can never qualify. It also refuses the
+  selected backup drive, the system disk, folders, disk images, network
+  and CD drives, and any drive whose size it cannot read. Before erasing,
+  it says whether this card's videos are in the backup drive's records,
+  and asks a second time when they are not; both questions default to No.
+  Windows uses the system's own Format dialog for that one drive (no admin
+  needed); the Mac uses `diskutil eraseVolume`, FAT32 up to 32 GB and exFAT
+  above. Help explains it in all five languages.
+
+  Not yet tried on a real card - see Known gaps in ARCHITECTURE.md.
+
 ## 1.5.4
 
 ### Added
