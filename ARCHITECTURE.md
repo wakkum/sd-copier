@@ -339,12 +339,12 @@ GitHub's runners and attaches the zips to a release, triggered by a version
 tag or manually against an existing tag. The manual trigger takes a separate
 `ref`, because a tag can predate a fix to the build scripts themselves.
 
-Release order matters: **the release must exist before the build runs**,
-since the workflow uploads onto it. Creating the release with
-`gh release create <tag> --target main` makes the tag and the release
-together, which fires the tag-push trigger with the release already in
-place; this is the path used for 1.5.0 and 1.5.1 and both built and
-attached unattended.
+Releasing is just pushing a version tag. The workflow's first job creates
+the GitHub release for that tag if it does not exist yet, with the tag's
+section of `CHANGELOG.md` as the notes, and the two builds wait for it
+before uploading onto it. (Up to 1.5.3 the release had to be created
+first, with `gh release create <tag> --target main`, or the upload failed.)
+The new release is marked latest, which is what the self-updater reads.
 
 Gotchas the CI run exposed, both now fixed but worth not reintroducing:
 `pip install --upgrade pip <other packages>` fails on Windows because pip
@@ -403,12 +403,10 @@ That is why it now lives inside the project rather than in temporary space.
 
 ## 11. Known gaps
 
-- **Format SD Card is untested on real hardware** (1.6.0). The rules were
-  exercised against simulated drives on both platforms, and the dialogs and
-  flows in the real window, but no card has actually been formatted by it
-  yet, and the Windows IOCTL offsets and `SHFormatDrive` call have not run on
-  Windows. Try it on a spare card, with the backup drive plugged in, before
-  relying on it.
+- **Format SD Card is untested on the Mac** (1.6.0). On Windows it was
+  tried with a real card before release: the card formatted and the backup
+  hard drive was refused. The Mac path (`diskutil eraseVolume`) has only
+  run against simulated drives.
 
 - The mockups in `howto/` are hand-maintained and drift from the UI
   unless regenerated after a layout change (§10). This has already

@@ -2,6 +2,8 @@
 
 ## 1.6.0
 
+Includes everything listed under 1.5.4, which was not released on its own.
+
 ### Added
 - **Format SD Card.** A button at the bottom wipes the chosen card so it
   is empty for the camera again, without leaving the app. It only ever
@@ -22,7 +24,15 @@
   inside the app made the whole window shrink on a scaled display until it
   was resized.
 
-  Not yet tried on a real card - see Known gaps in ARCHITECTURE.md.
+  Tested on Windows with a real card: the card formatted, and the backup
+  hard drive was refused.
+
+### Changed
+- **Releases create themselves.** Pushing a version tag now creates the
+  GitHub release (notes taken from this file) before the builds attach to
+  it, instead of the release having to exist first.
+- **A test build that never becomes a release**, for trying a change on a
+  real machine first: Actions > "Test build (no release)".
 
 ## 1.5.4
 
