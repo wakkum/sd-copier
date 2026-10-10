@@ -18,6 +18,10 @@
   needed), and the confirmation names the format to check there; the Mac
   uses `diskutil eraseVolume`. Help explains it in all five languages.
 
+  On Windows the Format window runs in a separate process: opening it from
+  inside the app made the whole window shrink on a scaled display until it
+  was resized.
+
   Not yet tried on a real card - see Known gaps in ARCHITECTURE.md.
 
 ## 1.5.4

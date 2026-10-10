@@ -192,9 +192,14 @@ that is unknown, or not a card format such as NTFS, does
 `target_file_system()` fall back to the size rule: FAT32 to 32 GiB, exFAT
 above, which is how SDHC and SDXC cards ship.
 
-Windows formats through `SHFormatDrive`, the dialog Explorer uses. It
-needs no elevation for removable media and offers only that one drive,
-but it cannot be told the file system - so the confirmation names the
+Windows formats through `SHFormatDrive`, the dialog Explorer uses, run in
+a **separate process**: the app starts a second copy of itself as
+`<exe> --format-drive E`, which opens only that dialog and exits with 0
+(formatted), 1 (cancelled) or 2 (failed). Called in-process, the dialog
+changed the main window's DPI scaling - on a scaled display everything was
+redrawn smaller until the window was resized. The dialog needs no
+elevation for removable media and offers only that one drive, but it
+cannot be told the file system - so the confirmation names the
 one to check in the dialog. Its own default is the size rule, which
 matches in nearly every case. It cannot make FAT32 above 32 GB at all, so
 a larger FAT32 card can only come back as exFAT on Windows (the Mac keeps

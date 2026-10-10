@@ -1914,13 +1914,17 @@ def format_card_mac(mount: str, target: str) -> tuple[bool, str]:
     return r.returncode == 0, output
 
 
-def format_card_windows(letter: str, hwnd: int) -> str:
-    """Open Windows's own Format dialog for that one drive.
+# Run as "<app> --format-drive E", the app only opens the Format dialog for
+# that drive and exits. See format_card_windows for why.
+FORMAT_HELPER_FLAG = "--format-drive"
+
+
+def run_format_helper(letter: str) -> int:
+    """The helper process: Windows's own Format dialog for one drive.
 
     SHFormatDrive is the dialog Explorer uses: it formats removable media
-    without admin rights, picks FAT32 or exFAT by size the way the camera
-    expects, and has no way to select a different drive. Returns "done",
-    "cancelled" or "failed".
+    without admin rights and has no way to select a different drive. Exit
+    code 0 formatted, 1 cancelled, 2 failed.
     """
     import ctypes
     from ctypes import wintypes
@@ -1930,12 +1934,41 @@ def format_card_windows(letter: str, hwnd: int) -> str:
     shformatdrive = ctypes.windll.shell32.SHFormatDrive
     shformatdrive.restype = ctypes.c_uint32
     shformatdrive.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.UINT, wintypes.UINT]
-    result = shformatdrive(hwnd, ord(letter.upper()) - ord("A"), shfmt_id_default, quick)
+    result = shformatdrive(None, ord(letter.upper()) - ord("A"), shfmt_id_default, quick)
+    log.info("format helper for %s: SHFormatDrive returned %#x", letter, result)
     if result == shfmt_cancel:
-        return "cancelled"
+        return 1
     if result in (shfmt_error, shfmt_noformat):
+        return 2
+    return 0
+
+
+def format_card_windows(letter: str) -> str:
+    """Format the card through a separate copy of this app.
+
+    Calling SHFormatDrive in-process changed the main window's DPI scaling:
+    afterwards everything was drawn smaller until the window was resized.
+    In its own process the dialog can change whatever it likes. Blocks
+    until the dialog closes; returns "done", "cancelled" or "failed".
+    """
+    import ctypes
+
+    if getattr(sys, "frozen", False):
+        command = [sys.executable, FORMAT_HELPER_FLAG, letter]
+    else:
+        command = [sys.executable, os.path.abspath(__file__), FORMAT_HELPER_FLAG, letter]
+    try:
+        # Let the helper's dialog come to the front rather than open
+        # behind this window. ASFW_ANY.
+        ctypes.windll.user32.AllowSetForegroundWindow(ctypes.c_uint32(0xFFFFFFFF).value)
+    except Exception:
+        pass
+    try:
+        code = subprocess.run(command).returncode
+    except OSError as exc:
+        log_exception("starting the format helper", exc)
         return "failed"
-    return "done"
+    return {0: "done", 1: "cancelled"}.get(code, "failed")
 
 
 # ---------------------------------------------------------------------------
@@ -3232,17 +3265,16 @@ class App(tk.Tk):
         log.info("formatting %s: disk %s, volume %s bytes, disk %s bytes, backed_up=%s, "
                  "file system %s -> %s", card, info["disk"], info["volume_bytes"],
                  info["disk_bytes"], backed_up, current_fs or "unknown", target_fs)
-        if sys.platform.startswith("win"):
-            outcome = format_card_windows(card[0], int(self.wm_frame(), 16))
-            self._format_finished(outcome, "")
-            return
-
         self._set_busy(True)
         self.config(cursor="watch")
 
         def work():
-            ok, output = format_card_mac(card, target_fs)
-            self.after(0, lambda: self._format_finished("done" if ok else "failed", output))
+            if sys.platform.startswith("win"):
+                outcome, output = format_card_windows(card[0]), ""
+            else:
+                ok, output = format_card_mac(card, target_fs)
+                outcome = "done" if ok else "failed"
+            self.after(0, lambda: self._format_finished(outcome, output))
 
         threading.Thread(target=work, daemon=True).start()
 
@@ -3351,6 +3383,9 @@ class App(tk.Tk):
 def main():
     setup_logging()
     sys.excepthook = lambda t, v, tb: log_exception("unhandled error", v)
+    if (len(sys.argv) == 3 and sys.argv[1] == FORMAT_HELPER_FLAG
+            and sys.platform.startswith("win") and re.fullmatch(r"[A-Za-z]", sys.argv[2])):
+        sys.exit(run_format_helper(sys.argv[2]))
     app = App()
     app.mainloop()
 
