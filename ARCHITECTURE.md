@@ -186,10 +186,19 @@ some other way. It uses the duplicate-card fingerprint registry on the
 selected destination, and the wording - and a second confirmation - make
 plain when there is no record of a backup.
 
+The card keeps its current file system (`card_file_system()`:
+`GetVolumeInformationW` on Windows, `diskutil info` on the Mac). Only when
+that is unknown, or not a card format such as NTFS, does
+`target_file_system()` fall back to the size rule: FAT32 to 32 GiB, exFAT
+above, which is how SDHC and SDXC cards ship.
+
 Windows formats through `SHFormatDrive`, the dialog Explorer uses. It
-needs no elevation for removable media, offers only that one drive, and
-picks FAT32 or exFAT by capacity the way cameras expect. The Mac runs
-`diskutil eraseVolume` with the same rule (FAT32 to 32 GiB, exFAT above).
+needs no elevation for removable media and offers only that one drive,
+but it cannot be told the file system - so the confirmation names the
+one to check in the dialog. Its own default is the size rule, which
+matches in nearly every case. It cannot make FAT32 above 32 GB at all, so
+a larger FAT32 card can only come back as exFAT on Windows (the Mac keeps
+it FAT32). The Mac runs `diskutil eraseVolume` with the exact file system.
 Neither path has been run against a real card yet - see Known gaps.
 
 ## 8. Update mechanism

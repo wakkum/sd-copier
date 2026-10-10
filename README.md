@@ -139,9 +139,12 @@ first-run warnings above apply either way.
   drive. Anything it cannot measure is refused. The confirmation says
   whether this card's videos are in the backup drive's records, and asks a
   second time if they are not. On Windows it opens the system's own Format
-  dialog for that one drive (no admin rights needed, FAT32 or exFAT chosen
-  by size); on the Mac it runs `diskutil eraseVolume` (FAT32 up to 32 GB,
-  exFAT above).
+  dialog for that one drive (no admin rights needed); on the Mac it runs
+  `diskutil eraseVolume`. The card keeps the format it has now (FAT32 stays
+  FAT32, exFAT stays exFAT); only if that cannot be read does it fall back
+  to FAT32 up to 32 GB and exFAT above. On Windows the confirmation names
+  the format to check in the Format window, since that dialog cannot be
+  told in advance.
 - **Check for Updates** — looks at this repo's
   [latest release](https://github.com/wakkum/sd-copier/releases/latest).
   On Windows the app installs the update itself: it downloads the release

@@ -156,7 +156,8 @@ STRINGS = {
         "format_no_dest": "No backup hard drive is chosen, so it cannot be checked whether these videos have been backed up.",
         "format_empty": "There are no videos on this card.",
         "format_confirm_again": "Are you completely sure? The videos on this card will be lost for good.",
-        "format_windows_hint": "\n\nWindows will then open its own Format window for the card. Click Start, then OK.",
+        "format_fs_line": "\n\nIt will be formatted as {fs}.",
+        "format_windows_hint": "\n\nWindows will then open its own Format window for the card. Check that \"File system\" says {fs}, then click Start, then OK.",
         "format_done": "The SD card has been formatted. It is empty and ready to go back in the camera.",
         "format_cancelled": "Formatting was cancelled. Nothing was changed.",
         "format_failed": "The SD card could not be formatted.\n\n{error}",
@@ -258,7 +259,8 @@ STRINGS = {
         "format_no_dest": "Δεν έχει επιλεγεί σκληρός δίσκος αντιγράφων, οπότε δεν μπορεί να ελεγχθεί αν αυτά τα βίντεο έχουν αντιγραφεί.",
         "format_empty": "Δεν υπάρχουν βίντεο σε αυτήν την κάρτα.",
         "format_confirm_again": "Είστε απολύτως σίγουροι; Τα βίντεο αυτής της κάρτας θα χαθούν για πάντα.",
-        "format_windows_hint": "\n\nΤα Windows θα ανοίξουν μετά το δικό τους παράθυρο Διαμόρφωσης για την κάρτα. Πατήστε Έναρξη και μετά OK.",
+        "format_fs_line": "\n\nΘα διαμορφωθεί ως {fs}.",
+        "format_windows_hint": "\n\nΤα Windows θα ανοίξουν μετά το δικό τους παράθυρο Διαμόρφωσης για την κάρτα. Ελέγξτε ότι στο \"Σύστημα αρχείων\" γράφει {fs}, και μετά πατήστε Έναρξη και OK.",
         "format_done": "Η κάρτα SD διαμορφώθηκε. Είναι άδεια και έτοιμη να μπει ξανά στην κάμερα.",
         "format_cancelled": "Η διαμόρφωση ακυρώθηκε. Δεν άλλαξε τίποτα.",
         "format_failed": "Δεν ήταν δυνατή η διαμόρφωση της κάρτας SD.\n\n{error}",
@@ -379,7 +381,8 @@ STRINGS = {
         "format_no_dest": "Aucun disque dur de sauvegarde n'est choisi : impossible de vérifier si ces vidéos ont été sauvegardées.",
         "format_empty": "Il n'y a aucune vidéo sur cette carte.",
         "format_confirm_again": "Êtes-vous vraiment sûr ? Les vidéos de cette carte seront perdues pour toujours.",
-        "format_windows_hint": "\n\nWindows ouvrira ensuite sa propre fenêtre de formatage pour la carte. Cliquez sur Démarrer, puis sur OK.",
+        "format_fs_line": "\n\nElle sera formatée en {fs}.",
+        "format_windows_hint": "\n\nWindows ouvrira ensuite sa propre fenêtre de formatage pour la carte. Vérifiez que « Système de fichiers » indique {fs}, puis cliquez sur Démarrer, puis sur OK.",
         "format_done": "La carte SD a été formatée. Elle est vide et prête à retourner dans la caméra.",
         "format_cancelled": "Le formatage a été annulé. Rien n'a été modifié.",
         "format_failed": "Impossible de formater la carte SD.\n\n{error}",
@@ -499,7 +502,8 @@ STRINGS = {
         "format_no_dest": "Es ist keine Backup-Festplatte ausgewählt, daher kann nicht geprüft werden, ob diese Videos gesichert wurden.",
         "format_empty": "Auf dieser Karte sind keine Videos.",
         "format_confirm_again": "Sind Sie ganz sicher? Die Videos auf dieser Karte gehen für immer verloren.",
-        "format_windows_hint": "\n\nWindows öffnet danach sein eigenes Formatierungsfenster für die Karte. Klicken Sie auf Starten und dann auf OK.",
+        "format_fs_line": "\n\nSie wird als {fs} formatiert.",
+        "format_windows_hint": "\n\nWindows öffnet danach sein eigenes Formatierungsfenster für die Karte. Prüfen Sie, dass bei \"Dateisystem\" {fs} steht, und klicken Sie dann auf Starten und auf OK.",
         "format_done": "Die SD-Karte wurde formatiert. Sie ist leer und kann wieder in die Kamera.",
         "format_cancelled": "Das Formatieren wurde abgebrochen. Es wurde nichts verändert.",
         "format_failed": "Die SD-Karte konnte nicht formatiert werden.\n\n{error}",
@@ -619,7 +623,8 @@ STRINGS = {
         "format_no_dest": "Nessun disco rigido di backup è selezionato, quindi non si può verificare se questi video sono stati copiati.",
         "format_empty": "Su questa scheda non ci sono video.",
         "format_confirm_again": "Sei assolutamente sicuro? I video di questa scheda andranno persi per sempre.",
-        "format_windows_hint": "\n\nWindows aprirà poi la sua finestra di formattazione per la scheda. Fai clic su Avvia, poi su OK.",
+        "format_fs_line": "\n\nVerrà formattata come {fs}.",
+        "format_windows_hint": "\n\nWindows aprirà poi la sua finestra di formattazione per la scheda. Controlla che in \"File system\" sia indicato {fs}, poi fai clic su Avvia e su OK.",
         "format_done": "La scheda SD è stata formattata. È vuota e pronta per tornare nella videocamera.",
         "format_cancelled": "La formattazione è stata annullata. Non è stato modificato nulla.",
         "format_failed": "Impossibile formattare la scheda SD.\n\n{error}",
@@ -1666,8 +1671,8 @@ def eject_drive(path: str) -> bool:
 MAX_FORMAT_BYTES = 100 * 1000 ** 3
 
 # Cards up to 32 GiB are SDHC and come formatted FAT32; bigger ones are SDXC
-# and exFAT. Cameras expect the format their card size came with. Only used
-# on the Mac - on Windows, the system Format dialog makes the same choice.
+# and exFAT. A card is re-formatted to whatever it has now; this size rule
+# only decides when that is unknown or not a card format (NTFS, say).
 FAT32_MAX_BYTES = 32 * 1024 ** 3
 
 
@@ -1851,14 +1856,54 @@ def check_formattable(card: str, dest: str) -> dict:
             "device": device}
 
 
+def card_file_system(card: str) -> str:
+    """What the card is formatted as now: "FAT32", "exFAT", "FAT16",
+    "FAT12", or "" if unknown or something else."""
+    try:
+        if sys.platform.startswith("win"):
+            import ctypes
+            fs = ctypes.create_unicode_buffer(261)
+            if not ctypes.windll.kernel32.GetVolumeInformationW(
+                    ctypes.c_wchar_p(card[:2] + "\\"), None, 0, None, None, None, fs, 261):
+                return ""
+            # Windows calls FAT16 and FAT12 plain "FAT".
+            return {"FAT32": "FAT32", "EXFAT": "exFAT", "FAT": "FAT16"}.get(fs.value.upper(), "")
+        info = _diskutil_info(card)
+    except Exception as exc:
+        log.warning("could not read the file system of %s: %s", card, exc)
+        return ""
+    if info.get("FilesystemType") == "exfat":
+        return "exFAT"
+    if info.get("FilesystemType") == "msdos":
+        for kind in ("FAT32", "FAT16", "FAT12"):
+            if kind in info.get("FilesystemName", ""):
+                return kind
+    return ""
+
+
+def target_file_system(current: str, size: int) -> str:
+    """Keep the card's own format; fall back to what its size calls for.
+
+    Windows's Format dialog cannot make FAT32 above 32 GB, so on Windows a
+    bigger FAT32 card can only become exFAT.
+    """
+    by_size = "FAT32" if size <= FAT32_MAX_BYTES else "exFAT"
+    if not current:
+        return by_size
+    if current == "FAT32" and size > FAT32_MAX_BYTES and sys.platform.startswith("win"):
+        return "exFAT"
+    return current
+
+
 def fat_volume_name(name: str) -> str:
     """A name FAT32 and exFAT both accept: up to 11 of A-Z, 0-9 and _."""
     cleaned = re.sub(r"[^A-Z0-9_]", "", name.upper())[:11]
     return cleaned or "SDCARD"
 
 
-def format_card_mac(mount: str, size: int) -> tuple[bool, str]:
-    file_system = "MS-DOS FAT32" if size <= FAT32_MAX_BYTES else "ExFAT"
+def format_card_mac(mount: str, target: str) -> tuple[bool, str]:
+    file_system = {"FAT32": "MS-DOS FAT32", "FAT16": "MS-DOS FAT16",
+                   "FAT12": "MS-DOS FAT12", "exFAT": "ExFAT"}[target]
     name = fat_volume_name(Path(mount).name)
     try:
         r = subprocess.run(["diskutil", "eraseVolume", file_system, name, mount],
@@ -3159,9 +3204,16 @@ class App(tk.Tk):
             else:
                 backed_up, backup_line = False, self.t("format_not_backed_up")
 
+        current_fs = card_file_system(card)
+        target_fs = target_file_system(current_fs, info["disk_bytes"])
         message = self.t("format_confirm", label=drive_label(card), backup=backup_line)
+        message += self.t("format_fs_line", fs=target_fs)
         if sys.platform.startswith("win"):
-            message += self.t("format_windows_hint")
+            # SHFormatDrive cannot be told the file system, so say which to
+            # pick. Its own default (by size) already matches in nearly
+            # every case. Windows lists FAT16/FAT12 as plain "FAT".
+            message += self.t("format_windows_hint",
+                              fs="FAT" if target_fs in ("FAT16", "FAT12") else target_fs)
         if not messagebox.askyesno(title, message, icon="warning", default="no"):
             return
         if not backed_up and not messagebox.askyesno(
@@ -3177,8 +3229,9 @@ class App(tk.Tk):
             messagebox.showwarning(title, self.t(refusal.key, **refusal.kwargs))
             return
 
-        log.info("formatting %s: disk %s, volume %s bytes, disk %s bytes, backed_up=%s",
-                 card, info["disk"], info["volume_bytes"], info["disk_bytes"], backed_up)
+        log.info("formatting %s: disk %s, volume %s bytes, disk %s bytes, backed_up=%s, "
+                 "file system %s -> %s", card, info["disk"], info["volume_bytes"],
+                 info["disk_bytes"], backed_up, current_fs or "unknown", target_fs)
         if sys.platform.startswith("win"):
             outcome = format_card_windows(card[0], int(self.wm_frame(), 16))
             self._format_finished(outcome, "")
@@ -3188,7 +3241,7 @@ class App(tk.Tk):
         self.config(cursor="watch")
 
         def work():
-            ok, output = format_card_mac(card, info["disk_bytes"])
+            ok, output = format_card_mac(card, target_fs)
             self.after(0, lambda: self._format_finished("done" if ok else "failed", output))
 
         threading.Thread(target=work, daemon=True).start()

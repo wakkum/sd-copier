@@ -12,9 +12,11 @@
   and CD drives, and any drive whose size it cannot read. Before erasing,
   it says whether this card's videos are in the backup drive's records,
   and asks a second time when they are not; both questions default to No.
-  Windows uses the system's own Format dialog for that one drive (no admin
-  needed); the Mac uses `diskutil eraseVolume`, FAT32 up to 32 GB and exFAT
-  above. Help explains it in all five languages.
+  The card keeps the format it has now - FAT32 stays FAT32 - falling back
+  to FAT32 up to 32 GB and exFAT above only if it cannot be read. Windows
+  uses the system's own Format dialog for that one drive (no admin
+  needed), and the confirmation names the format to check there; the Mac
+  uses `diskutil eraseVolume`. Help explains it in all five languages.
 
   Not yet tried on a real card - see Known gaps in ARCHITECTURE.md.
 
