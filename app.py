@@ -37,7 +37,7 @@ from datetime import date
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-APP_VERSION = "1.6.0"
+APP_VERSION = "1.6.1"
 
 # Public GitHub repo used by "Check for Updates" (reads the latest Release
 # via GitHub's public API - no auth token needed or embedded). Left blank,
@@ -813,8 +813,8 @@ STEP BY STEP
   6. Wait while the files copy and are checked. Do NOT remove the SD card
      or the hard drive while this is happening.
 
-  7. When it finishes you are told how many files were copied, and the
-     folder opens so you can look at it. You can then disconnect both.
+  7. When it finishes you are told how many files were copied and where
+     they were saved. You can then disconnect both.
 
 ADDING A SECOND CAMERA TO THE SAME EVENT
 
@@ -932,8 +932,8 @@ Backup". Ανοίξτε τον φάκελο και κάντε διπλό κλι�
   6. Περιμένετε όσο αντιγράφονται και ελέγχονται τα αρχεία. ΜΗΝ αφαιρέσετε
      την κάρτα SD ή τον σκληρό δίσκο όσο διαρκεί η διαδικασία.
 
-  7. Όταν ολοκληρωθεί, θα δείτε πόσα αρχεία αντιγράφηκαν και ο φάκελος θα
-     ανοίξει για να τον ελέγξετε. Μετά μπορείτε να τα αποσυνδέσετε.
+  7. Όταν ολοκληρωθεί, θα δείτε πόσα αρχεία αντιγράφηκαν και πού
+     αποθηκεύτηκαν. Μετά μπορείτε να τα αποσυνδέσετε.
 
 ΠΡΟΣΘΗΚΗ ΔΕΥΤΕΡΗΣ ΚΑΜΕΡΑΣ ΣΤΟ ΙΔΙΟ ΣΥΜΒΑΝ
 
@@ -1055,9 +1055,8 @@ droit sur l'application et choisissez « Ouvrir ». Une seule fois.
   6. Patientez pendant la copie et la vérification des fichiers. NE
      RETIREZ PAS la carte SD ni le disque dur pendant ce temps.
 
-  7. À la fin, le nombre de fichiers copiés s'affiche et le dossier
-     s'ouvre pour que vous puissiez le voir. Vous pouvez alors tout
-     débrancher.
+  7. À la fin, le nombre de fichiers copiés s'affiche, avec l'endroit
+     où ils ont été enregistrés. Vous pouvez alors tout débrancher.
 
 AJOUTER UNE DEUXIÈME CAMÉRA AU MÊME ÉVÉNEMENT
 
@@ -1183,9 +1182,8 @@ SCHRITT FÜR SCHRITT
   6. Warten Sie, während die Dateien kopiert und geprüft werden. Entfernen
      Sie in dieser Zeit WEDER die SD-Karte NOCH die Festplatte.
 
-  7. Am Ende wird angezeigt, wie viele Dateien kopiert wurden, und der
-     Ordner öffnet sich zur Kontrolle. Danach können Sie beide Geräte
-     abziehen.
+  7. Am Ende wird angezeigt, wie viele Dateien kopiert wurden und wo sie
+     gespeichert sind. Danach können Sie beide Geräte abziehen.
 
 EINE ZWEITE KAMERA ZUM SELBEN EREIGNIS HINZUFÜGEN
 
@@ -1309,8 +1307,8 @@ PASSO DOPO PASSO
   6. Aspetta mentre i file vengono copiati e verificati. NON rimuovere la
      scheda SD né il disco rigido durante questa fase.
 
-  7. Al termine vedrai quanti file sono stati copiati e la cartella si
-     aprirà per un controllo. Dopo puoi scollegare entrambi.
+  7. Al termine vedrai quanti file sono stati copiati e dove sono stati
+     salvati. Dopo puoi scollegare entrambi.
 
 AGGIUNGERE UNA SECONDA VIDEOCAMERA ALLO STESSO EVENTO
 
@@ -2903,8 +2901,6 @@ class App(tk.Tk):
                     self.t("app_title"),
                     self.t("msg_success", copied=copied, folder=event_folder)
                 )
-
-            open_in_file_manager(event_folder)
 
         self.after(0, show)
 

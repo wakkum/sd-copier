@@ -43,8 +43,8 @@ For each event, it writes:
   events were copied, so there's one place to read through everything that's
   been backed up without opening each folder individually.
 
-When the copy finishes, the destination folder opens automatically in
-Finder/Explorer so the user can see the result right away.
+When the copy finishes, a message says how many files were copied and the
+folder they were saved in. The folder is not opened automatically.
 
 The leading number (`NN`) auto-increments if you run the tool again for the
 same date (e.g. a second recording later the same day becomes `02_EVENT_...`),

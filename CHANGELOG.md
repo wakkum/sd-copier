@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.1
+
+### Changed
+- **The folder no longer opens after a copy.** The finished message
+  already says how many files were copied and where they were saved;
+  having Explorer or Finder pop open on top of it was not wanted. Help
+  says so in all five languages.
+
 ## 1.6.0
 
 Includes everything listed under 1.5.4, which was not released on its own.
